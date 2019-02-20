@@ -35,18 +35,21 @@ public class UserServicesImplementation implements IUserServices
 	ModelMapper modelMapper;
 
 	@Override
-	public boolean addUser(UserDTO userDTO) throws UserException, MessagingException, IllegalArgumentException, UnsupportedEncodingException
+	public boolean addUser(UserDTO userDTO) throws  MessagingException, IllegalArgumentException, UnsupportedEncodingException
 	{
 		//getting user record by email
 		Optional<User> avaiability = userRepository.findByEmail(userDTO.getEmail());
 		if(avaiability.isPresent())
 		{
-			throw  new UserException("User Already Exist..!");
+			//throw  new UserException("User Already Exist..!");
+			return false;
 		}
 
 		//encrypting password by using BCrypt encoder
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User user = modelMapper.map(userDTO, User.class);//storing value of one model into another
+
+		util.send(user.getEmail(), "USer Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
 
 		userRepository.save(user);
 
@@ -55,7 +58,6 @@ public class UserServicesImplementation implements IUserServices
 
 		//sending mail to user along with generated token
 		//util.send(userDTO.getEmail(),"User Activation", "link to Activate account: http://localhost:8080/userActivation/"+token);
-		util.send(user.getEmail(), "USer Activation", util.getBody("192.168.0.125:8080/user/userActivation/",user.getId()));
 		return true;
 	}
 
@@ -110,12 +112,11 @@ public class UserServicesImplementation implements IUserServices
 	public void forgetPassword(String email) throws Exception
 	{
 		Optional<User> user = userRepository.findByEmail(email);
-//		System.out.println("user id->"+userRepository.findByEmail(email).get().getId());
-		//System.out.println("id "+userRepository.findByEmail(email));
 		long id = user.get().getId();
-		System.out.println(id);
+		//System.out.println(id);
+		//sending mail with reset link along with token
 		util.send(email, "PasswordReset", util.getBody("192.168.0.134:4200/resetPassword/",id));
-		System.out.println("completed");
+		//System.out.println("completed");
 	}
 
 	@Override

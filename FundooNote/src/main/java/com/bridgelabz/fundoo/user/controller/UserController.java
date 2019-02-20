@@ -35,6 +35,8 @@ import com.bridgelabz.fundoo.user.utility.Util;
 @CrossOrigin(origins = "*" ,allowedHeaders = "*",exposedHeaders= {"jwtToken"})
 // .@CrossOrigin(origins= {"http://localhost:4200"},allowedHeaders = "*",exposedHeaders= {"jwtToken"})
 @RequestMapping("/user")
+
+//annotation for set environment file 
 @PropertySource("classpath:message.properties")
 public class UserController 
 {
@@ -42,10 +44,10 @@ public class UserController
 
 	@Autowired
 	IUserServices userServices;
-	
+
 	@Autowired
 	Response response;
-	
+
 	@Autowired
 	Util util;
 
@@ -66,19 +68,20 @@ public class UserController
 			throw new UserException("Data doesn't matched to field..!");
 		}
 		boolean check = userServices.addUser(userDTo);
-		System.out.println("Environment "+environment.getProperty("a"));
+		//System.out.println("Environment "+environment.getProperty("a"));
 		//response=new Response();
 		if(check)
 		{
-			response.setStatusCode(200);
-			response.setStatusMessge(environment.getProperty("a"));
+			response.setStatusCode(-200);
+			response.setStatusMessage(environment.getProperty("1"));
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 		else
 		{
-			response.setStatusMessge("fail to Register");
+			response.setStatusCode(200);
+
+			response.setStatusMessage(environment.getProperty("-1"));
 			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
-			//return "un success";
 		}
 	}
 
@@ -92,79 +95,85 @@ public class UserController
 			logger.error("Error while binding user details");
 			throw new UserException("Data doesn't matched to field..!");
 		}
-		String userToken = userServices.userLogin(loginDTO);
-		System.out.println("token "+userToken);		
+		String loginResponse = userServices.userLogin(loginDTO);
+		
+		//System.out.println("token "+userToken);		
 		//response = new Response();
-		if(userToken!=null)
+		if(loginResponse!=null)
 		{
-			System.out.println("hi "+response);
+			//System.out.println("hi "+response);
 			response.setStatusCode(200);
-			response.setStatusMessge("Successfully login");
+			response.setStatusMessage(environment.getProperty("2"));
 
-			httpServletResponse.addHeader("jwtToken", userToken);
-//			System.out.println(resp);
-			System.out.println(httpServletResponse.containsHeader("jwtToken"));
+			httpServletResponse.addHeader("jwtToken", loginResponse);
+			//			System.out.println(resp);
+			//System.out.println(httpServletResponse.containsHeader("jwtToken"));
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 		else
-		{				
-			response.setStatusMessge("Log in fail");
+		{		
+			response.setStatusCode(-200);
+			response.setStatusMessage(environment.getProperty("-2"));
 			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
 		}
 	}
 
-	@RequestMapping("/userActivation/{token}")
-	public ResponseEntity<String> userVerification(@PathVariable String token) throws Exception
+	@RequestMapping("/useractivation/{token}")
+	public ResponseEntity<Response> userVerification(@PathVariable String token) throws Exception
 	{
-		System.out.println("hihihihihi");
-		boolean check=userServices.verifyToken(token);
+		logger.info("Token ->"+token);
+		logger.trace("Email Verification");
+		
+		userServices.verifyToken(token);
 
-		if(check)
-			return new ResponseEntity<String>("Activated", HttpStatus.ACCEPTED);
-		else
-			return new ResponseEntity<String>("Not Activated", HttpStatus.NOT_ACCEPTABLE);
-
+		response.setStatusMessage(environment.getProperty("4"));
+		
+		return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
 	}
-	
+
 	@PostMapping("/forgetpassword")
 	public ResponseEntity<Response> forgetPassword(@RequestBody UserDTO userDto) throws Exception
 	{
-		System.out.println("Email->"+userDto.getEmail());
-		
+		//System.out.println("Email->"+userDto.getEmail());
+
 		userServices.forgetPassword(userDto.getEmail());
 		response.setStatusCode(200);
-		response.setStatusMessge("password reset mail send to You");
-		
+		response.setStatusMessage(environment.getProperty("5"));
+
 		return new ResponseEntity<Response>( response,HttpStatus.OK);
 	}
-	
-	@PutMapping("/resetpassword/{token}")
-	public ResponseEntity<String> resetPassword(@RequestBody UserDTO userdto, @PathVariable("token") String token) throws Exception
+
+	@PutMapping("/resetpassword/{token}/{password}")
+	public ResponseEntity<Response> resetPassword(@PathVariable("password") String password, @PathVariable("token") String token) throws Exception
 	{
-		 userServices.resetPassword(token, userdto.getPassword());
-		
-		System.out.println("Token-> "+token);
-		return new ResponseEntity<String>("Password Reset successfully ",HttpStatus.OK);
+		System.out.println(password);
+		userServices.resetPassword(token, password);
+		System.out.println(response);
+		//response = new Response();
+		response.setStatusCode(166);
+		response.setStatusMessage("success");
+		//System.out.println("Token-> "+token);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 
-//	@RequestMapping("/test")
-//	public ResponseEntity<String> userVer()
-//	{
-//		//boolean check=userServices.verifyToken(token);
-//
-//		//if(check)
-//			return new ResponseEntity<String>("Activated", HttpStatus.ACCEPTED);
-//		//else
-//			//return new ResponseEntity<String>("Not Activated", HttpStatus.NOT_ACCEPTABLE);
-//
-//	}
+	//	@RequestMapping("/test")
+	//	public ResponseEntity<String> userVer()
+	//	{
+	//		//boolean check=userServices.verifyToken(token);
+	//
+	//		//if(check)
+	//			return new ResponseEntity<String>("Activated", HttpStatus.ACCEPTED);
+	//		//else
+	//			//return new ResponseEntity<String>("Not Activated", HttpStatus.NOT_ACCEPTABLE);
+	//
+	//	}
 
-//	@RequestMapping("/testmail")
-//	public String sendMail() throws MessagingException, UnsupportedEncodingException 
-//	{
-//		//util.send("bandgar09@gmail.com","Test mail from Spring", "Hello ");
-//		//userServices.test("ansaruddeen030@gmail.com");
-//		return "success";
-//	}
+	//	@RequestMapping("/testmail")
+	//	public String sendMail() throws MessagingException, UnsupportedEncodingException 
+	//	{
+	//		//util.send("bandgar09@gmail.com","Test mail from Spring", "Hello ");
+	//		//userServices.test("ansaruddeen030@gmail.com");
+	//		return "success";
+	//	}
 
 }

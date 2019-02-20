@@ -13,7 +13,8 @@ import lombok.ToString;
 @Component
 public class Response
 {
-	private String statusMessge;	
+	private String statusMessage;	
 	private int statusCode;
+
 	
 }

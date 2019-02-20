@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.user;
+package com.bridgelabz.fundoo;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
