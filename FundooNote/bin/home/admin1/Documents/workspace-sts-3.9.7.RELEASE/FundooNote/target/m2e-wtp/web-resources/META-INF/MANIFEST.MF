@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: fundoo
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: admin1
+Implementation-Vendor-Id: com.bridgelabz
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/fundoo
+Created-By: Maven Integration for Eclipse
+
