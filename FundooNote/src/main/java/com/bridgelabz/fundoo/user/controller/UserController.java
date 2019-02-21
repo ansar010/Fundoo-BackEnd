@@ -72,13 +72,13 @@ public class UserController
 		//response=new Response();
 		if(check)
 		{
-			response.setStatusCode(-200);
+			response.setStatusCode(200);
 			response.setStatusMessage(environment.getProperty("1"));
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 		else
 		{
-			response.setStatusCode(200);
+			response.setStatusCode(402);
 
 			response.setStatusMessage(environment.getProperty("-1"));
 			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
@@ -90,6 +90,7 @@ public class UserController
 	{
 		logger.info("Login Input "+loginDTO);
 		logger.trace("User Login");
+		
 		if(bindingResult.hasErrors())
 		{
 			logger.error("Error while binding user details");
@@ -99,8 +100,14 @@ public class UserController
 		
 		//System.out.println("token "+userToken);		
 		//response = new Response();
-		if(loginResponse!=null)
+		System.out.println(loginResponse);
+		if(loginResponse.equals("invalid"))
 		{
+			response.setStatusCode(-200);
+			response.setStatusMessage(environment.getProperty("-2"));
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		
+		} else {
 			//System.out.println("hi "+response);
 			response.setStatusCode(200);
 			response.setStatusMessage(environment.getProperty("2"));
@@ -110,25 +117,21 @@ public class UserController
 			//System.out.println(httpServletResponse.containsHeader("jwtToken"));
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
-		else
-		{		
-			response.setStatusCode(-200);
-			response.setStatusMessage(environment.getProperty("-2"));
-			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
-		}
 	}
 
 	@RequestMapping("/useractivation/{token}")
-	public ResponseEntity<Response> userVerification(@PathVariable String token) throws Exception
+	public ResponseEntity<String> userVerification(@PathVariable String token) throws Exception
 	{
 		logger.info("Token ->"+token);
 		logger.trace("Email Verification");
 		
 		userServices.verifyToken(token);
 
-		response.setStatusMessage(environment.getProperty("4"));
+		//response.setStatusMessage(environment.getProperty("3"));
 		
-		return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
+		//return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
+		
+		return new ResponseEntity<String>(environment.getProperty("3"), HttpStatus.ACCEPTED);
 	}
 
 	@PostMapping("/forgetpassword")
@@ -150,8 +153,8 @@ public class UserController
 		userServices.resetPassword(token, password);
 		System.out.println(response);
 		//response = new Response();
-		response.setStatusCode(166);
-		response.setStatusMessage("success");
+		response.setStatusCode(200);
+		response.setStatusMessage(environment.getProperty("4"));
 		//System.out.println("Token-> "+token);
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}

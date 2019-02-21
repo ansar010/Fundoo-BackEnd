@@ -13,7 +13,7 @@ public interface IUserServices
 	public boolean addUser(UserDTO userDTo) throws UserException, MessagingException, IllegalArgumentException, UnsupportedEncodingException;
 	public String userLogin(LoginDTO loginDTO) throws IllegalArgumentException, UnsupportedEncodingException;
 //	public void test(String string) throws MessagingException, UnsupportedEncodingException;
-	public boolean isVerified();
+//	public boolean isVerified();
 	public boolean verifyToken(String token) throws Exception;
 	
 	public void forgetPassword(String email) throws Exception;

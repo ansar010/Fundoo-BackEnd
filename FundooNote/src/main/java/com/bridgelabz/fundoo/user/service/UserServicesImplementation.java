@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
-import com.bridgelabz.fundoo.user.exception.UserException;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.utility.UserToken;
 import com.bridgelabz.fundoo.user.utility.Util;
@@ -39,6 +38,7 @@ public class UserServicesImplementation implements IUserServices
 	{
 		//getting user record by email
 		Optional<User> avaiability = userRepository.findByEmail(userDTO.getEmail());
+		
 		if(avaiability.isPresent())
 		{
 			//throw  new UserException("User Already Exist..!");
@@ -48,10 +48,11 @@ public class UserServicesImplementation implements IUserServices
 		//encrypting password by using BCrypt encoder
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User user = modelMapper.map(userDTO, User.class);//storing value of one model into another
-
-		util.send(user.getEmail(), "USer Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
-
+		
 		userRepository.save(user);
+
+		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
+
 
 		//generating token to activate user account
 		//String token = UserToken.generateToken(user.getId());
@@ -65,8 +66,10 @@ public class UserServicesImplementation implements IUserServices
 	public String userLogin(LoginDTO loginDTO) throws IllegalArgumentException, UnsupportedEncodingException 
 	{
 		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
+		
 		//String password = passwordEncoder.encode(LoginDTO.getPassword());
 		//	System.out.println("Password -> "+password);
+		
 		//Optional<User> userPassword = userRepository.findBypassword(password);
 		String userPassword=userEmail.get().getPassword();
 		
@@ -78,23 +81,30 @@ public class UserServicesImplementation implements IUserServices
 				
 				return generatedToken;
 			}
+			else
+			{
+				return "invalid";
+			}
 
 		}
 		return null;
 
 	}
 
-	@Override
-	public boolean isVerified() 
-	{
-		//logic
-		return true;
-	}
+//	@Override
+//	public boolean isVerified() 
+//	{
+//		//logic
+//		return true;
+//	}
 
 	public boolean verifyToken(String token) throws Exception
 	{
 		long userId = UserToken.tokenVerify(token);//taking decoded token id
+		System.out.println(userId);
 		Optional<User> checkVerify = userRepository.findById(userId).map(this::verify);
+		System.out.println(checkVerify);
+		System.out.println("Verification-> "+checkVerify.get().isVarified());
 		
 		if(checkVerify.isPresent())
 			return true;
