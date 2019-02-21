@@ -1,6 +1,7 @@
 package com.bridgelabz.fundoo.user.service;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
@@ -49,8 +50,11 @@ public class UserServicesImplementation implements IUserServices
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User user = modelMapper.map(userDTO, User.class);//storing value of one model into another
 		
+		LocalDate date = LocalDate.now();
+		user.setRegistered_date(date);
+		
 		userRepository.save(user);
-
+		
 		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
 
 
@@ -115,6 +119,10 @@ public class UserServicesImplementation implements IUserServices
 	//setting true to activate the user in db
 	private User verify(User user) {
 		user.setVarified(true);
+		
+		LocalDate date = LocalDate.now();
+		user.setAccount_update(date);
+		
 		return userRepository.save(user);
 	}
 

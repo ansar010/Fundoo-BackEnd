@@ -1,6 +1,7 @@
 package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,6 +43,13 @@ public class User implements Serializable
 	@Email(message = "Please provide a valid e-mail")
 	@NotEmpty(message="Please provide valid email")
 	private String email;
+	
+	@Column(name="reg_Date")
+	private LocalDate registered_date;
+	
+	@Column(name="ac_update_date")
+	private LocalDate account_update;
+	
 
 	@Column(name="mobileNumber")
 	@Pattern(regexp="[0-9]{10}",message = "provide valid mobile number")
