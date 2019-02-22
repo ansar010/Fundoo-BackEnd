@@ -1,10 +1,7 @@
 package com.bridgelabz.fundoo.user.service;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.Optional;
-
-import javax.mail.MessagingException;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +12,8 @@ import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.model.User;
-import com.bridgelabz.fundoo.user.utility.UserToken;
-import com.bridgelabz.fundoo.user.utility.Util;
+import com.bridgelabz.fundoo.utility.UserToken;
+import com.bridgelabz.fundoo.utility.Util;
 
 @Service("userService")
 public class UserServicesImplementation implements IUserServices 
@@ -35,11 +32,11 @@ public class UserServicesImplementation implements IUserServices
 	ModelMapper modelMapper;
 
 	@Override
-	public boolean addUser(UserDTO userDTO) throws  MessagingException, IllegalArgumentException, UnsupportedEncodingException
+	public boolean addUser(UserDTO userDTO)
 	{
 		//getting user record by email
 		Optional<User> avaiability = userRepository.findByEmail(userDTO.getEmail());
-		
+
 		if(avaiability.isPresent())
 		{
 			//throw  new UserException("User Already Exist..!");
@@ -49,12 +46,12 @@ public class UserServicesImplementation implements IUserServices
 		//encrypting password by using BCrypt encoder
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User user = modelMapper.map(userDTO, User.class);//storing value of one model into another
-		
+
 		LocalDate date = LocalDate.now();
 		user.setRegistered_date(date);
-		
+
 		userRepository.save(user);
-		
+
 		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
 
 
@@ -67,22 +64,22 @@ public class UserServicesImplementation implements IUserServices
 	}
 
 	@Override
-	public String userLogin(LoginDTO loginDTO) throws IllegalArgumentException, UnsupportedEncodingException 
+	public String userLogin(LoginDTO loginDTO)
 	{
 		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
-		
+
 		//String password = passwordEncoder.encode(LoginDTO.getPassword());
 		//	System.out.println("Password -> "+password);
-		
+
 		//Optional<User> userPassword = userRepository.findBypassword(password);
 		String userPassword=userEmail.get().getPassword();
-		
+
 		if(userEmail.get().isVarified()==true)
 		{
 			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
 			{
 				String generatedToken = UserToken.generateToken(userEmail.get().getId());
-				
+
 				return generatedToken;
 			}
 			else
@@ -95,21 +92,21 @@ public class UserServicesImplementation implements IUserServices
 
 	}
 
-//	@Override
-//	public boolean isVerified() 
-//	{
-//		//logic
-//		return true;
-//	}
+	//	@Override
+	//	public boolean isVerified() 
+	//	{
+	//		//logic
+	//		return true;
+	//	}
 
-	public boolean verifyToken(String token) throws Exception
+	public boolean verifyToken(String token)
 	{
 		long userId = UserToken.tokenVerify(token);//taking decoded token id
 		System.out.println(userId);
 		Optional<User> checkVerify = userRepository.findById(userId).map(this::verify);
 		System.out.println(checkVerify);
 		System.out.println("Verification-> "+checkVerify.get().isVarified());
-		
+
 		if(checkVerify.isPresent())
 			return true;
 		else
@@ -119,15 +116,15 @@ public class UserServicesImplementation implements IUserServices
 	//setting true to activate the user in db
 	private User verify(User user) {
 		user.setVarified(true);
-		
+
 		LocalDate date = LocalDate.now();
 		user.setAccount_update(date);
-		
+
 		return userRepository.save(user);
 	}
 
 	@Override
-	public void forgetPassword(String email) throws Exception
+	public void forgetPassword(String email)
 	{
 		Optional<User> user = userRepository.findByEmail(email);
 		long id = user.get().getId();
@@ -138,23 +135,23 @@ public class UserServicesImplementation implements IUserServices
 	}
 
 	@Override
-	public boolean resetPassword(String token,String password) throws Exception
+	public boolean resetPassword(String token,String password)
 	{
 		System.out.println("Token ->"+token+"\n password"+password);
-		
+
 		long userId = UserToken.tokenVerify(token);
 		String encodedPassword = passwordEncoder.encode(password);
 		Optional<User> user = userRepository.findById(userId);
 		user.get().setPassword(encodedPassword);
 		System.out.println(user.get());
-	//	User.setPassword(passwordEncoder.encode.getPassword()));
+		//	User.setPassword(passwordEncoder.encode.getPassword()));
 		System.out.println("Encoded password"+encodedPassword);
-		
 
-//		System.out.println("dbuser ->"+dbUser);
-	
+
+		//		System.out.println("dbuser ->"+dbUser);
+
 		userRepository.save(user.get());
-		
+
 		System.out.println("Save Done");
 		return true;
 	}

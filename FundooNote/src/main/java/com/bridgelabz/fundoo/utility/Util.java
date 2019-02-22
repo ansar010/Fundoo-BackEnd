@@ -11,13 +11,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.bridgelabz.fundoo.exception.EmailException;
+
 @Component
 public class Util 
 {
-	//	@Autowired
-	//	JavaMailSender javaMailSender;
-
-
 	/**
 	 * 
 	 * @param to user mail id
@@ -29,26 +27,36 @@ public class Util
 	@Autowired
 	private JavaMailSender javaMailSender;	
 
-	public void send(String to, String subject, String body) throws MessagingException, UnsupportedEncodingException {
+	public void send(String to, String subject, String body)
+	{
 
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper;
 
-		helper = new MimeMessageHelper(message, true); // true indicates
-		// multipart message
-		//helper.setFrom("NoReply-Fundoo");
-		helper.setFrom(new InternetAddress("example@gmail.com", "NoReply-fundoo"));
-		//helper.setReplyTo((InternetAddress.parse("fundoonote19@gmail.com",false)));
-		helper.setReplyTo("fundoonote19@gmail.com");
-		helper.setSubject(subject);
-		helper.setTo(to);
-		helper.setText(body, true); // true indicates html
-		// continue using helper object for more functionalities like adding attachments, etc.  
+		
+		try {
+			
+			// multipart message
+			//helper.setFrom("NoReply-Fundoo");
+			helper = new MimeMessageHelper(message, true); // true indicates
 
-		javaMailSender.send(message);
+			helper.setFrom(new InternetAddress("example@gmail.com", "NoReply-fundoo"));
+			
+			helper.setReplyTo("fundoonote19@gmail.com");
+			helper.setSubject(subject);
+			helper.setTo(to);
+			helper.setText(body, true); // true indicates html
+			// continue using helper object for more functionalities like adding attachments, etc.  
+
+			javaMailSender.send(message);
+		} catch (UnsupportedEncodingException | MessagingException e) {
+			throw new EmailException("Exception while sending mail");
+		}
+		//helper.setReplyTo((InternetAddress.parse("fundoonote19@gmail.com",false)));
+		
 	}
 	
-	public String getBody(String link,long id) throws IllegalArgumentException, UnsupportedEncodingException
+	public String getBody(String link,long id) 
 	{
 		return link+UserToken.generateToken(id);
 	}

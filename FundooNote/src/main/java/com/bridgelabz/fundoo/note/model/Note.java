@@ -5,20 +5,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.bridgelabz.fundoo.user.model.User;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name="UserNote")
+@Entity
 @Getter
 @Setter
+@Table(name="user_note")
 public class Note 
 {
 	@Id
 	@GeneratedValue
-	private long id;	 
+	private long noteId;	 
 	
 	private String title;
 	

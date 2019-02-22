@@ -2,7 +2,6 @@ package com.bridgelabz.fundoo.user.controller;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -23,17 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.exception.UserException;
+import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
-import com.bridgelabz.fundoo.user.exception.UserException;
-import com.bridgelabz.fundoo.user.response.Response;
 import com.bridgelabz.fundoo.user.service.IUserServices;
-import com.bridgelabz.fundoo.user.utility.Util;
+import com.bridgelabz.fundoo.utility.Util;
 
 
 @RestController
 @CrossOrigin(origins = "*" ,allowedHeaders = "*",exposedHeaders= {"jwtToken"})
 // .@CrossOrigin(origins= {"http://localhost:4200"},allowedHeaders = "*",exposedHeaders= {"jwtToken"})
+
 @RequestMapping("/user")
 
 //annotation for set environment file 
@@ -56,7 +56,7 @@ public class UserController
 
 	//	@PostMapping("/register")
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTo,BindingResult bindingResult) throws UserException, MessagingException, IllegalArgumentException, UnsupportedEncodingException
+	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTo,BindingResult bindingResult)
 	{
 		logger.info("userDTO data"+userDTo);
 		logger.trace("User Registration");

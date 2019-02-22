@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.note.response;
+package com.bridgelabz.fundoo.response;
 
 import org.springframework.stereotype.Component;
 
@@ -14,5 +14,5 @@ public class Response
 {
 	private String statusMessage;	
 	private int statusCode;
-
+	
 }

@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-////@Configuration
+//@Configuration
 ////@ComponentScan
-////@EnableAutoConfiguration(exclude=SecurityAutoConfiguration.class)
+//@EnableAutoConfiguration(exclude=SecurityAutoConfiguration.class)
 @SpringBootApplication
 @ComponentScan(basePackages= {"com.bridgelabz.fundoo"})
 public class FundooApplication {
