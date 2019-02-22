@@ -56,9 +56,9 @@ public class UserController
 
 	//	@PostMapping("/register")
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTo,BindingResult bindingResult)
+	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult)
 	{
-		logger.info("userDTO data"+userDTo);
+		logger.info("userDTO data"+userDTO.toString());
 		logger.trace("User Registration");
 
 		if(bindingResult.hasErrors())
@@ -67,7 +67,7 @@ public class UserController
 			logger.error("Error while binding user details");
 			throw new UserException("Data doesn't matched to field..!");
 		}
-		boolean check = userServices.addUser(userDTo);
+		boolean check = userServices.addUser(userDTO);
 		//System.out.println("Environment "+environment.getProperty("a"));
 		//response=new Response();
 		if(check)

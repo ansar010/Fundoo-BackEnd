@@ -26,7 +26,7 @@ public class NoteController {
 	@Autowired
 	INoteService noteService;
 
-	
+	@Autowired
 	Environment environment;
 	
 	@Autowired
@@ -43,6 +43,6 @@ public class NoteController {
 		response.setStatusCode(200);
 		response.setStatusMessage(environment.getProperty("7"));
 		
-		return new ResponseEntity<Response>(response,HttpStatus.OK);
+		return new ResponseEntity<Response>(response,HttpStatus.CREATED);
 	}
 }

@@ -52,7 +52,7 @@ public class UserServicesImplementation implements IUserServices
 
 		userRepository.save(user);
 
-		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getId()));
+		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
 
 
 		//generating token to activate user account
@@ -78,7 +78,7 @@ public class UserServicesImplementation implements IUserServices
 		{
 			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
 			{
-				String generatedToken = UserToken.generateToken(userEmail.get().getId());
+				String generatedToken = UserToken.generateToken(userEmail.get().getUser_id());
 
 				return generatedToken;
 			}
@@ -127,7 +127,7 @@ public class UserServicesImplementation implements IUserServices
 	public void forgetPassword(String email)
 	{
 		Optional<User> user = userRepository.findByEmail(email);
-		long id = user.get().getId();
+		long id = user.get().getUser_id();
 		//System.out.println(id);
 		//sending mail with reset link along with token
 		util.send(email, "PasswordReset", util.getBody("192.168.0.134:4200/resetPassword/",id));

@@ -28,9 +28,9 @@ public class User implements Serializable
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="id")
+	@Column(name="user_id")
 //	@NotEmpty(message = "please provide your id")
-	private long id;
+	private long user_id;
 	
 	@Column(name="verification")
 	boolean isVarified;
@@ -58,8 +58,5 @@ public class User implements Serializable
 	@Column(name="password")
 	private String password;
 	
-	@Column(name="confirmPassword")
-	private String confirmPassword;
-
 		
 }

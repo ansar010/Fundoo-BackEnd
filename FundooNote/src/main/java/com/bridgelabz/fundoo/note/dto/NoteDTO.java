@@ -8,5 +8,5 @@ import lombok.Setter;
 public class NoteDTO
 {
 	private String title;
-	private String content;
+	private String description;
 }
