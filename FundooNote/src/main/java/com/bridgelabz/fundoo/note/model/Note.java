@@ -1,8 +1,11 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,15 +23,22 @@ import lombok.Setter;
 public class Note 
 {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="noteId")
 	private long noteId;	 
 	
 	@Column(name="title")
 	private String title;
 	
-	@Column(name="description")
+	@Column(name="description",length=2000)
 	private String description;
+	
+	
+	private LocalDate createStamp;
+	
+	private LocalDate updateStamp;
+	
+	private LocalDate deleteStamp;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")

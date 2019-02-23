@@ -24,7 +24,7 @@ public class UserToken {
 	private static  Environment environment;
 
 	//Secret key to generated token
-	private static String TOKEN_SECRET="Ansar";
+	private static String TOKEN_SECRET=environment.getProperty("0");
 
 	/**
 	 * 

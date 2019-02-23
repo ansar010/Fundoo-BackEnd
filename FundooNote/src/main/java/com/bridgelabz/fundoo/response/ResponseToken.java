@@ -10,9 +10,10 @@ import lombok.ToString;
 @Setter
 @ToString
 @Component
-public class Response
+public class ResponseToken
 {
 	private String statusMessage;	
 	private int statusCode;
+	private String token;
 	
 }

@@ -12,6 +12,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.bridgelabz.fundoo.exception.EmailException;
+import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.response.ResponseToken;
 
 @Component
 public class Util 
@@ -26,7 +28,10 @@ public class Util
 	 */
 	@Autowired
 	private JavaMailSender javaMailSender;	
-
+//	
+	@Autowired
+	Response response;
+	
 	public void send(String to, String subject, String body)
 	{
 
@@ -35,7 +40,6 @@ public class Util
 
 		
 		try {
-			
 			// multipart message
 			//helper.setFrom("NoReply-Fundoo");
 			helper = new MimeMessageHelper(message, true); // true indicates
@@ -59,5 +63,38 @@ public class Util
 	public String getBody(String link,long id) 
 	{
 		return link+UserToken.generateToken(id);
+	}
+	
+	/**
+	 * Method to return response object
+	 * 
+	 * @param statusMessage takes from user
+	 * @param statusCode takes from user
+	 * @return response object
+	 */
+	public Response statusInfo(String statusMessage,int statusCode)
+	{
+//		Response response = new Response();
+		response.setStatusCode(statusCode);
+		response.setStatusMessage(statusMessage);
+	
+		return response;
+	}
+	
+	/**
+	 * Method to return responseToken object
+	 * 
+	 * @param statusMessage takes from user
+	 * @param statusCode takes from user
+	 * @return responseToken object
+	 */
+	public ResponseToken tokenStatusInfo(String statusMessage,int statusCode,String token)
+	{
+		ResponseToken tokenResponse = new ResponseToken();
+		tokenResponse.setStatusCode(statusCode);
+		tokenResponse.setStatusMessage(statusMessage);
+		tokenResponse.setStatusMessage(token);
+
+		return tokenResponse;
 	}
 }

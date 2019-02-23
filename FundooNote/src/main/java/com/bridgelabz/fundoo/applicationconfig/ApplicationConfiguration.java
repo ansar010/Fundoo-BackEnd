@@ -1,12 +1,13 @@
 package com.bridgelabz.fundoo.applicationconfig;
 
+import org.apache.catalina.connector.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.response.ResponseToken;
 
 @Configuration
 public class ApplicationConfiguration 
@@ -33,4 +34,10 @@ public class ApplicationConfiguration
 	{
 		return new Response();
 	}
+//	
+//	@Bean
+//	public ResponseToken getResponseToken()
+//	{
+//		return new ResponseToken();
+//	}
 }
