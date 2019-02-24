@@ -15,6 +15,9 @@ import com.bridgelabz.fundoo.exception.EmailException;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class Util 
 {
@@ -54,6 +57,7 @@ public class Util
 
 			javaMailSender.send(message);
 		} catch (UnsupportedEncodingException | MessagingException e) {
+			log.error("Mail Exception"+e.getMessage());
 			throw new EmailException("Exception while sending mail");
 		}
 		//helper.setReplyTo((InternetAddress.parse("fundoonote19@gmail.com",false)));

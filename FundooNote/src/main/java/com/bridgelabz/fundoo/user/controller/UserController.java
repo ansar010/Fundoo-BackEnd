@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.exception.UserException;
@@ -53,8 +54,6 @@ public class UserController
 	@Autowired
 	Util util;
 
-//	@Autowired
-//	private Environment environment;
 
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult)
@@ -62,68 +61,62 @@ public class UserController
 		logger.info("userDTO data"+userDTO.toString());
 		logger.trace("User Registration");
 
-		if(bindingResult.hasErrors())
-		{
-			logger.error("Error while binding user details");
-			throw new UserException(environment.getProperty("10"));
-		}
+		bindingResult(bindingResult);
 		 
 		Response statusResponse = userServices.addUser(userDTO);
-		System.out.println("Ansar  "+statusResponse.toString());
 		
-		 return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
-
+		return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
+	}
+	
+	@PostMapping("/test")
+	public ResponseEntity<Response> test(@RequestParam String name )
+	{
+	Response test = userServices.Test(name);
+	return new ResponseEntity<Response>(test,HttpStatus.OK);
 	}
 
-//	@PostMapping("/login")
-//	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) throws UserException, IllegalArgumentException, UnsupportedEncodingException
-//	{
-//		logger.info("Login Input "+loginDTO);
-//		logger.trace("User Login");
-//		
-//		if(bindingResult.hasErrors())
-//		{
-//			logger.error("Error while binding user details");
-//			throw new UserException("Data doesn't matched to field..!");
-//		}
-//		String loginResponse = userServices.userLogin(loginDTO);
-//		
-//		//System.out.println("token "+userToken);		
-//		//response = new Response();
-//		System.out.println(loginResponse);
-//		if(loginResponse.equals("invalid"))
-//		{
-//			response.setStatusCode(-200);
-//			response.setStatusMessage(environment.getProperty("-2"));
-//			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
-//		
-//		} else {
-//			//System.out.println("hi "+response);
-//			response.setStatusCode(200);
-//			response.setStatusMessage(environment.getProperty("2"));
-//			response.setToken(loginResponse);
-//			//httpServletResponse.addHeader("jwtToken", loginResponse);
-//			//			System.out.println(resp);
-//			//System.out.println(httpServletResponse.containsHeader("jwtToken"));
-//			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
-//		}
-//	}
-//
-//	@RequestMapping("/useractivation/{token}")
-//	public ResponseEntity<String> userVerification(@PathVariable String token) throws Exception
-//	{
-//		logger.info("Token ->"+token);
-//		logger.trace("Email Verification");
-//		
-//		userServices.verifyToken(token);
-//
-//		//response.setStatusMessage(environment.getProperty("3"));
-//		
-//		//return new ResponseEntity<Response>(response, HttpStatus.ACCEPTED);
-//		
-//		return new ResponseEntity<String>(environment.getProperty("3"), HttpStatus.ACCEPTED);
-//	}
-//
+	@PostMapping("/login")
+	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) throws UserException, IllegalArgumentException, UnsupportedEncodingException
+	{
+		logger.info("Login Input "+loginDTO);
+		logger.trace("User Login");
+		
+		bindingResult(bindingResult);
+
+		String loginResponse = userServices.userLogin(loginDTO);
+		
+		//System.out.println("token "+userToken);		
+		//response = new Response();
+		System.out.println(loginResponse);
+		if(loginResponse.equals("invalid"))
+		{
+			response.setStatusCode(-200);
+			response.setStatusMessage(environment.getProperty("-2"));
+			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
+		
+		} else {
+			//System.out.println("hi "+response);
+			response.setStatusCode(200);
+			response.setStatusMessage(environment.getProperty("2"));
+			response.setToken(loginResponse);
+			//httpServletResponse.addHeader("jwtToken", loginResponse);
+			//			System.out.println(resp);
+			//System.out.println(httpServletResponse.containsHeader("jwtToken"));
+			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping("/useractivation/{token}")
+	public ResponseEntity<String> userVerification(@PathVariable String token)
+	{
+		logger.info("Token ->"+token);
+		logger.trace("Email Verification");
+		
+		userServices.verifyToken(token);
+		
+		return new ResponseEntity<String>(environment.getProperty("3"), HttpStatus.ACCEPTED);
+	}
+
 //	@PostMapping("/forgetpassword")
 //	public ResponseEntity<ResponseToken> forgetPassword(@RequestBody UserDTO userDto) throws Exception
 //	{
@@ -169,4 +162,12 @@ public class UserController
 	//		return "success";
 	//	}
 
+	private void bindingResult(BindingResult bindingResult)
+	{
+		if(bindingResult.hasErrors())
+		{
+			logger.error("Error while binding user details");
+			throw new UserException(environment.getProperty("10"));
+		}
+	}
 }

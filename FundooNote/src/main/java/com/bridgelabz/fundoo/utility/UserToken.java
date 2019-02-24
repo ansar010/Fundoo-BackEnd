@@ -20,11 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:message.properties")
 public class UserToken {
 	
-	@Autowired
-	private static  Environment environment;
-
+//	@Autowired
+//	private static  Environment environment;
+	
 	//Secret key to generated token
-	private static String TOKEN_SECRET=environment.getProperty("0");
+	 static String TOKEN_SECRET="Ansar";
 
 	/**
 	 * 
@@ -45,7 +45,8 @@ public class UserToken {
 			return token;		
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error("Token Error"+e.getMessage());
-			throw new TokenException(200,environment.getProperty("6"));
+//			throw new TokenException(environment.getProperty("6"));
+			throw new TokenException("Error while Generating token");
 		}
 	}
 	
@@ -73,7 +74,8 @@ public class UserToken {
 			return userid;
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error(e.getMessage());
-			throw new TokenException(200, environment.getProperty("6"));
+			//throw new TokenException(environment.getProperty("6"));
+			throw new TokenException("Error while Generating token");
 		}
 	}
 }

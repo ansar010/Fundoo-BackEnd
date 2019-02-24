@@ -37,14 +37,12 @@ public class FundooExceptionHandler {
 //		return new ResponseEntity<Response>(statusInfo,HttpStatus.OK);	
 //	}
 //
-//	@ExceptionHandler(TokenException.class)
-//	public ResponseEntity<Response> tokenExceptionHandler(TokenException e)
-//	{
-//		response.setStatusMessage(e.getMessage());
-//		response.setStatusCode(e.getErrorCode());
-//
-//		return new ResponseEntity<Response>(response,HttpStatus.OK);
-//	}
+	@ExceptionHandler(TokenException.class)
+	public ResponseEntity<Response> tokenExceptionHandler(TokenException e)
+	{
+		Response statusInfo = util.statusInfo(e.getMessage(), -200);
+		return new ResponseEntity<Response>(statusInfo,HttpStatus.OK);	
+	}
 	
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<Response> UserExceptionHandler(UserException e)
@@ -53,12 +51,11 @@ public class FundooExceptionHandler {
 		return new ResponseEntity<Response>(statusInfo,HttpStatus.OK);	
 	}
 	
-//	@ExceptionHandler(EmailException.class)
-//	public ResponseEntity<Response> EmailExceptionHandler(NoteException e)
-//	{
-//		response.setStatusMessage(e.getMessage());
-//		response.setStatusMessage(e.getMessage());
-//		return new ResponseEntity<Response>(response,HttpStatus.OK);	
-//	}
+	@ExceptionHandler(EmailException.class)
+	public ResponseEntity<Response> EmailExceptionHandler(EmailException e)
+	{
+		Response statusInfo = util.statusInfo(e.getMessage(), -200);
+		return new ResponseEntity<Response>(statusInfo,HttpStatus.OK);	
+	}
 
 }

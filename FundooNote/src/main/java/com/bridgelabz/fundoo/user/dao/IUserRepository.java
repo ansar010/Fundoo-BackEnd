@@ -11,8 +11,8 @@ import com.bridgelabz.fundoo.user.model.User;
 public interface IUserRepository extends CrudRepository<User, Long> 
 {
 	public Optional<User> findByEmail(String email);
-	public Optional<User> findById(long id);
-	//public Optional<User> findBypassword(String password);
+//	public Optional<User> findById(long id);
+	public Optional<User> findBypassword(String password);
 //	@Query(value="select password from user",nativeQuery=true)
 //	public List<Object[]> findPassword();
 }

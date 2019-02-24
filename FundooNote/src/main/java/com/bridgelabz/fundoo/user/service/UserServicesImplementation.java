@@ -61,8 +61,14 @@ public class UserServicesImplementation implements IUserServices
 
 		 user.setAccount_registered(LocalDateTime.now());
 
-		userRepository.save(user);
-
+		User saveResponse = userRepository.save(user);
+		
+		if(saveResponse==null)
+		{
+			throw new UserException("Data not Saved..!, give propper input ");
+		}
+		
+		System.out.println(user.getUser_id());
 		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
 		
 		Response statusInfo = util.statusInfo(environment.getProperty("1"), 200);
@@ -70,66 +76,73 @@ public class UserServicesImplementation implements IUserServices
 		System.out.println("res "+statusInfo.toString());
 		return statusInfo;
 	}
-//
-//	@Override
-//	public String userLogin(LoginDTO loginDTO)
-//	{
-//		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
-//
-//		//String password = passwordEncoder.encode(LoginDTO.getPassword());
-//		//	System.out.println("Password -> "+password);
-//
-//		//Optional<User> userPassword = userRepository.findBypassword(password);
-//		String userPassword=userEmail.get().getPassword();
-//
-//		if(userEmail.get().isVarified()==true)
-//		{
-//			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
-//			{
-//				String generatedToken = UserToken.generateToken(userEmail.get().getUser_id());
-//
-//				return generatedToken;
-//			}
-//			else
-//			{
-//				return "invalid";
-//			}
-//
-//		}
-//		return null;
-//
-//	}
-//
-//	//	@Override
-//	//	public boolean isVerified() 
-//	//	{
-//	//		//logic
-//	//		return true;
-//	//	}
-//
-//	public boolean verifyToken(String token)
-//	{
-//		long userId = UserToken.tokenVerify(token);//taking decoded token id
-//		System.out.println(userId);
-//		Optional<User> checkVerify = userRepository.findById(userId).map(this::verify);
-//		System.out.println(checkVerify);
-//		System.out.println("Verification-> "+checkVerify.get().isVarified());
-//
-//		if(checkVerify.isPresent())
-//			return true;
-//		else
-//			return false;
-//	}
-//
-//	//setting true to activate the user in db
-//	private User verify(User user) {
-//		user.setVarified(true);
-//
-//		 user.setAccount_update(LocalDateTime.now());
-//
-//		return userRepository.save(user);
-//	}
-//
+
+	@Override
+	public String userLogin(LoginDTO loginDTO)
+	{
+		log.info(loginDTO.toString());
+
+		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
+		
+		if(userEmail.isPresent())
+		{
+			throw new UserException(environment.getProperty("9"));
+		}
+		
+		//String password = passwordEncoder.encode(LoginDTO.getPassword());
+		//	System.out.println("Password -> "+password);
+
+		//Optional<User> userPassword = userRepository.findBypassword(password);
+		String userPassword=userEmail.get().getPassword();
+
+		if(userEmail.get().isVarified()==true)
+		{
+			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
+			{
+				String generatedToken = UserToken.generateToken(userEmail.get().getUser_id());
+
+				return generatedToken;
+			}
+			else
+			{
+				return "invalid";
+			}
+
+		}
+		return null;
+
+	}
+
+
+	public boolean verifyToken(String token)
+	{
+		log.info("token->"+token);
+
+		long userId = UserToken.tokenVerify(token);//taking decoded token id
+		log.info("userId->"+userId);
+
+		Optional<User> checkVerify = userRepository.findById(userId).map(this::verify);
+		log.info("verification status ->"+checkVerify);
+
+		if(checkVerify.isPresent())
+			return true;
+		else
+			return false;
+	}
+
+	//setting true to activate the user in db
+	private User verify(User user) 
+	{
+		log.info("userDetail->"+user);
+
+		user.setVarified(true);
+
+		 user.setAccount_update(LocalDateTime.now());
+
+		return userRepository.save(user);
+		
+	}
+
 //	@Override
 //	public void forgetPassword(String email)
 //	{
@@ -162,5 +175,13 @@ public class UserServicesImplementation implements IUserServices
 //		System.out.println("Save Done");
 //		return true;
 //	}
+
+	@Override
+	public Response Test(String name) {
+		
+		Response statusInfo = util.statusInfo(environment.getProperty("1"), 200);
+		return statusInfo;
+
+	}
 
 }

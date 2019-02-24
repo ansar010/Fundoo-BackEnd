@@ -9,13 +9,13 @@ public class TokenException extends RuntimeException
 {
 	private static final long serialVersionUID = 1L;
 
-	private int errorCode;
+	//private int errorCode;
 	//private String errorMessage; 
 
-	public TokenException(int errorCode,String errorMessage)
+	public TokenException(String errorMessage)
 	{
 		super(errorMessage);
 		//this.errorMessage=errorMessage;
-		this.errorCode=errorCode;
+		//this.errorCode=errorCode;
 	}
 }
