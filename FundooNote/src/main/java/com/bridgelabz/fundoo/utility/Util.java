@@ -97,7 +97,7 @@ public class Util
 		ResponseToken tokenResponse = new ResponseToken();
 		tokenResponse.setStatusCode(statusCode);
 		tokenResponse.setStatusMessage(statusMessage);
-		tokenResponse.setStatusMessage(token);
+		tokenResponse.setToken(token);
 
 		return tokenResponse;
 	}

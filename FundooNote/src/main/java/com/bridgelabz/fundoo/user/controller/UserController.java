@@ -75,37 +75,21 @@ public class UserController
 	return new ResponseEntity<Response>(test,HttpStatus.OK);
 	}
 
+
 	@PostMapping("/login")
-	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) throws UserException, IllegalArgumentException, UnsupportedEncodingException
-	{
+	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) 	{
 		logger.info("Login Input "+loginDTO);
 		logger.trace("User Login");
 		
 		bindingResult(bindingResult);
 
-		String loginResponse = userServices.userLogin(loginDTO);
-		
-		//System.out.println("token "+userToken);		
-		//response = new Response();
-		System.out.println(loginResponse);
-		if(loginResponse.equals("invalid"))
-		{
-			response.setStatusCode(-200);
-			response.setStatusMessage(environment.getProperty("-2"));
-			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
-		
-		} else {
-			//System.out.println("hi "+response);
-			response.setStatusCode(200);
-			response.setStatusMessage(environment.getProperty("2"));
-			response.setToken(loginResponse);
-			//httpServletResponse.addHeader("jwtToken", loginResponse);
-			//			System.out.println(resp);
-			//System.out.println(httpServletResponse.containsHeader("jwtToken"));
-			return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
-		}
+		ResponseToken userLoginResponse = userServices.userLogin(loginDTO);
+		System.out.println(userLoginResponse);
+
+		return new ResponseEntity<ResponseToken>(userLoginResponse, HttpStatus.OK);
 	}
 
+	
 	@RequestMapping("/useractivation/{token}")
 	public ResponseEntity<String> userVerification(@PathVariable String token)
 	{
@@ -117,42 +101,25 @@ public class UserController
 		return new ResponseEntity<String>(environment.getProperty("3"), HttpStatus.ACCEPTED);
 	}
 
-//	@PostMapping("/forgetpassword")
-//	public ResponseEntity<ResponseToken> forgetPassword(@RequestBody UserDTO userDto) throws Exception
-//	{
-//		//System.out.println("Email->"+userDto.getEmail());
-//
-//		userServices.forgetPassword(userDto.getEmail());
-//		response.setStatusCode(200);
-//		response.setStatusMessage(environment.getProperty("5"));
-//
-//		return new ResponseEntity<ResponseToken>( response,HttpStatus.OK);
-//	}
-//
-//	@PutMapping("/resetpassword/{token}/{password}")
-//	public ResponseEntity<ResponseToken> resetPassword(@PathVariable("password") String password, @PathVariable("token") String token) throws Exception
-//	{
-//		System.out.println(password);
-//		userServices.resetPassword(token, password);
-//		System.out.println(response);
-//		//response = new Response();
-//		response.setStatusCode(200);
-//		response.setStatusMessage(environment.getProperty("4"));
-//		//System.out.println("Token-> "+token);
-//		return new ResponseEntity<ResponseToken>(response,HttpStatus.OK);
-//	}
+	@PostMapping("/forgetpassword")
+	public ResponseEntity<Response> forgetPassword(@RequestBody UserDTO userDto)
+	{
+		logger.info("Email->"+userDto.getEmail());
 
-	//	@RequestMapping("/test")
-	//	public ResponseEntity<String> userVer()
-	//	{
-	//		//boolean check=userServices.verifyToken(token);
-	//
-	//		//if(check)
-	//			return new ResponseEntity<String>("Activated", HttpStatus.ACCEPTED);
-	//		//else
-	//			//return new ResponseEntity<String>("Not Activated", HttpStatus.NOT_ACCEPTABLE);
-	//
-	//	}
+		Response statusInfo = userServices.forgetPassword(userDto.getEmail());
+	
+		return new ResponseEntity<Response>( statusInfo,HttpStatus.OK);
+	}
+
+	@PutMapping("/resetpassword/{token}/{password}")
+	public ResponseEntity<Response> resetPassword(@PathVariable("password") String password, @PathVariable("token") String token) throws Exception
+	{
+		logger.info("Password->"+password);
+		Response resetPasswordResponse = userServices.resetPassword(token, password);
+		
+		return new ResponseEntity<Response>(resetPasswordResponse,HttpStatus.OK);
+	}
+
 
 	//	@RequestMapping("/testmail")
 	//	public String sendMail() throws MessagingException, UnsupportedEncodingException 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
@@ -59,7 +60,7 @@ public class UserServicesImplementation implements IUserServices
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User user = modelMapper.map(userDTO, User.class);//storing value of one model into another
 
-		 user.setAccount_registered(LocalDateTime.now());
+		user.setAccount_registered(LocalDateTime.now());
 
 		User saveResponse = userRepository.save(user);
 		
@@ -78,21 +79,18 @@ public class UserServicesImplementation implements IUserServices
 	}
 
 	@Override
-	public String userLogin(LoginDTO loginDTO)
+	public ResponseToken userLogin(LoginDTO loginDTO)
 	{
 		log.info(loginDTO.toString());
 
 		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
+	
 		
-		if(userEmail.isPresent())
+		if(!(userEmail.isPresent()))
 		{
-			throw new UserException(environment.getProperty("9"));
+			throw new UserException(environment.getProperty("-9"));
 		}
 		
-		//String password = passwordEncoder.encode(LoginDTO.getPassword());
-		//	System.out.println("Password -> "+password);
-
-		//Optional<User> userPassword = userRepository.findBypassword(password);
 		String userPassword=userEmail.get().getPassword();
 
 		if(userEmail.get().isVarified()==true)
@@ -101,15 +99,24 @@ public class UserServicesImplementation implements IUserServices
 			{
 				String generatedToken = UserToken.generateToken(userEmail.get().getUser_id());
 
-				return generatedToken;
+				
+				ResponseToken tokenStatusInfo = util.tokenStatusInfo(environment.getProperty("2"), 200, generatedToken);
+				
+				return tokenStatusInfo;
 			}
 			else
 			{
-				return "invalid";
+				throw new UserException(environment.getProperty("-2"));
+
 			}
 
 		}
-		return null;
+		else
+		{
+			throw new UserException(environment.getProperty("-12"));
+
+		}
+		
 
 	}
 
@@ -143,38 +150,47 @@ public class UserServicesImplementation implements IUserServices
 		
 	}
 
-//	@Override
-//	public void forgetPassword(String email)
-//	{
-//		Optional<User> user = userRepository.findByEmail(email);
-//		long id = user.get().getUser_id();
-//		//System.out.println(id);
-//		//sending mail with reset link along with token
-//		util.send(email, "PasswordReset", util.getBody("192.168.0.134:4200/resetPassword/",id));
-//		//System.out.println("completed");
-//	}
-//
-//	@Override
-//	public boolean resetPassword(String token,String password)
-//	{
-//		System.out.println("Token ->"+token+"\n password"+password);
-//
-//		long userId = UserToken.tokenVerify(token);
-//		String encodedPassword = passwordEncoder.encode(password);
-//		Optional<User> user = userRepository.findById(userId);
-//		user.get().setPassword(encodedPassword);
-//		System.out.println(user.get());
-//		//	User.setPassword(passwordEncoder.encode.getPassword()));
-//		System.out.println("Encoded password"+encodedPassword);
-//
-//
-//		//		System.out.println("dbuser ->"+dbUser);
-//
-//		userRepository.save(user.get());
-//
-//		System.out.println("Save Done");
-//		return true;
-//	}
+	@Override
+	public Response forgetPassword(String email)
+	{
+		log.info("email->"+email);
+
+		Optional<User> user = userRepository.findByEmail(email);
+		if(!(user.isPresent()))
+		{
+			throw new UserException(environment.getProperty("13"));
+		}
+		long id = user.get().getUser_id();
+
+		//sending mail with reset link along with token
+		util.send(email, "PasswordReset", util.getBody("192.168.0.134:4200/resetPassword/",id));
+
+		Response statusInfo = util.statusInfo(environment.getProperty("5"), 200);
+		
+		return statusInfo;
+	}
+
+	@Override
+	public Response resetPassword(String token,String password)
+	{
+		log.info("Token ->"+token+"\n password"+password);
+
+		long userId = UserToken.tokenVerify(token);
+		String encodedPassword = passwordEncoder.encode(password);
+		Optional<User> user = userRepository.findById(userId);
+		user.get().setPassword(encodedPassword);
+
+		//	User.setPassword(passwordEncoder.encode.getPassword()));
+		log.info("Encoded password"+encodedPassword);
+
+
+		//		System.out.println("dbuser ->"+dbUser);
+
+		userRepository.save(user.get());
+
+		Response statusInfo = util.statusInfo(environment.getProperty("4"), 200);
+		return statusInfo;
+	}
 
 	@Override
 	public Response Test(String name) {
