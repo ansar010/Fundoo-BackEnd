@@ -22,13 +22,12 @@ public class FundooExceptionHandler {
 //	@Autowired
 //	Response response;
 //	
-//	@ExceptionHandler(Exception.class)
-//	public ResponseEntity<Response> GlobalExceptionHandler(NoteException e)
-//	{
-//		response.setStatusMessage(e.getMessage());
-//		response.setStatusMessage(e.getMessage());
-//		return new ResponseEntity<Response>(response,HttpStatus.OK);	
-//	}
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Response> GlobalExceptionHandler(NoteException e)
+	{
+		Response statusInfo = util.statusInfo(e.getMessage(), -200);
+		return new ResponseEntity<Response>(statusInfo,HttpStatus.OK);	
+	}
 //
 //	@ExceptionHandler(NoteException.class)
 //	public ResponseEntity<Response> noteExceptionHandler(NoteException e)

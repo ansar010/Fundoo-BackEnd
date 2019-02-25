@@ -111,10 +111,12 @@ public class UserController
 		return new ResponseEntity<Response>( statusInfo,HttpStatus.OK);
 	}
 
-	@PutMapping("/resetpassword/{token}/{password}")
-	public ResponseEntity<Response> resetPassword(@PathVariable("password") String password, @PathVariable("token") String token) throws Exception
+	@PutMapping("/resetpassword/{token}")
+	public ResponseEntity<Response> resetPassword(@RequestBody String password, @PathVariable("token") String token) throws Exception
 	{
 		logger.info("Password->"+password);
+		logger.info("Token->"+token);
+		
 		Response resetPasswordResponse = userServices.resetPassword(token, password);
 		
 		return new ResponseEntity<Response>(resetPasswordResponse,HttpStatus.OK);
