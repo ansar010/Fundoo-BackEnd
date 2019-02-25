@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.bridgelabz.fundoo.response.ResponseToken;
-
 @Configuration
 public class ApplicationConfiguration 
 {

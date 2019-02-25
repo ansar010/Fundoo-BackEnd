@@ -1,7 +1,5 @@
 package com.bridgelabz.fundoo.user.controller;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.exception.UserException;
@@ -27,7 +24,6 @@ import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.service.IUserServices;
-import com.bridgelabz.fundoo.utility.Util;
 
 
 @RestController
@@ -46,13 +42,7 @@ public class UserController
 	IUserServices userServices;
 
 	@Autowired
-	ResponseToken response;
-	
-	@Autowired
 	private Environment environment;
-
-	@Autowired
-	Util util;
 
 
 	@PostMapping("/register")
@@ -68,12 +58,12 @@ public class UserController
 		return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
 	}
 	
-	@PostMapping("/test")
-	public ResponseEntity<Response> test(@RequestParam String name )
-	{
-	Response test = userServices.Test(name);
-	return new ResponseEntity<Response>(test,HttpStatus.OK);
-	}
+//	@PostMapping("/test")
+//	public ResponseEntity<Response> test(@RequestParam String name )
+//	{
+//	Response test = userServices.Test(name);
+//	return new ResponseEntity<Response>(test,HttpStatus.OK);
+//	}
 
 
 	@PostMapping("/login")
@@ -98,7 +88,7 @@ public class UserController
 		
 		userServices.verifyToken(token);
 		
-		return new ResponseEntity<String>(environment.getProperty("3"), HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>(environment.getProperty("status.activation.success"), HttpStatus.ACCEPTED);
 	}
 
 	@PostMapping("/forgetpassword")
@@ -112,7 +102,7 @@ public class UserController
 	}
 
 	@PutMapping("/resetpassword/{token}")
-	public ResponseEntity<Response> resetPassword(@RequestBody String password, @PathVariable("token") String token) throws Exception
+	public ResponseEntity<Response> resetPassword(@RequestBody String password, @PathVariable("token") String token)
 	{
 		logger.info("Password->"+password);
 		logger.info("Token->"+token);
@@ -136,7 +126,11 @@ public class UserController
 		if(bindingResult.hasErrors())
 		{
 			logger.error("Error while binding user details");
-			throw new UserException(environment.getProperty("10"));
+			
+			String statusMessge=environment.getProperty("status.bindingResult.errorCode");
+			int statusCode=Integer.parseInt(environment.getProperty("status.bindingResult.invalidData"));
+			
+			throw new UserException(statusMessge,statusCode);
 		}
 	}
 }

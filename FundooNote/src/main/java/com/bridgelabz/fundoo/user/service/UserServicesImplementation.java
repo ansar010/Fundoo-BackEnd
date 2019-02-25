@@ -17,8 +17,10 @@ import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.model.User;
-import com.bridgelabz.fundoo.utility.UserToken;
+import com.bridgelabz.fundoo.utility.EmailHelper;
+import com.bridgelabz.fundoo.utility.StatusHelper;
 import com.bridgelabz.fundoo.utility.Util;
+import com.bridgelabz.fundoo.utility.userToken;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +34,6 @@ public class UserServicesImplementation implements IUserServices
 	private IUserRepository userRepository;
 
 	@Autowired
-	private Util util;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
@@ -43,17 +42,20 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	private Environment environment;
 	
+	@Autowired
+	private userToken userToken;
+
 	@Override
 	public Response addUser(UserDTO userDTO)
 	{
 		log.info(userDTO.toString());
-		
+
 		//getting user record by email
 		Optional<User> avaiability = userRepository.findByEmail(userDTO.getEmail());
 
 		if(avaiability.isPresent())
 		{
-			throw new UserException(environment.getProperty("9"));
+			throw new UserException(environment.getProperty("status.register.emailExistError"),Integer.parseInt(environment.getProperty("status.register.errorCode")));
 		}
 
 		//encrypting password by using BCrypt encoder
@@ -63,19 +65,18 @@ public class UserServicesImplementation implements IUserServices
 		user.setAccount_registered(LocalDateTime.now());
 
 		User saveResponse = userRepository.save(user);
-		
+
 		if(saveResponse==null)
 		{
-			throw new UserException("Data not Saved..!, give propper input ");
+			throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		}
-		
+
 		System.out.println(user.getUser_id());
-		util.send(user.getEmail(), "User Activation", util.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
-		
-		Response statusInfo = util.statusInfo(environment.getProperty("1"), 200);
-		
-		System.out.println("res "+statusInfo.toString());
-		return statusInfo;
+		EmailHelper.sendEmail(user.getEmail(), "User Activation", Util.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
+
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
+
+		return response;
 	}
 
 	@Override
@@ -84,48 +85,48 @@ public class UserServicesImplementation implements IUserServices
 		log.info(loginDTO.toString());
 
 		Optional<User> userEmail = userRepository.findByEmail(loginDTO.getEmail());
-	
-		
+
+
 		if(!(userEmail.isPresent()))
 		{
-			throw new UserException(environment.getProperty("-9"));
+			throw new UserException(environment.getProperty("status.login.unregAccError"),Integer.parseInt(environment.getProperty("status.login.errorCode")));
 		}
-		
+
 		String userPassword=userEmail.get().getPassword();
 
 		if(userEmail.get().isVarified()==true)
 		{
 			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
 			{
-				String generatedToken = UserToken.generateToken(userEmail.get().getUser_id());
+				String generatedToken = userToken.generateToken(userEmail.get().getUser_id());
 
-				
-				ResponseToken tokenStatusInfo = util.tokenStatusInfo(environment.getProperty("2"), 200, generatedToken);
-				
-				return tokenStatusInfo;
+				ResponseToken responseToken = StatusHelper.tokenStatusInfo(environment.getProperty("status.login.success"),Integer.parseInt(environment.getProperty("status.success.code")),generatedToken);
+
+
+				return responseToken;
 			}
 			else
 			{
-				throw new UserException(environment.getProperty("-2"));
+				throw new UserException(environment.getProperty("status.login.invalidInput"),Integer.parseInt(environment.getProperty("status.login.errorCode")));
 
+				
 			}
 
 		}
 		else
 		{
-			throw new UserException(environment.getProperty("-12"));
+			throw new UserException(environment.getProperty("status.login.invalidMail"),Integer.parseInt(environment.getProperty("status.login.errorCode")));
 
 		}
-		
+
 
 	}
-
 
 	public boolean verifyToken(String token)
 	{
 		log.info("token->"+token);
 
-		long userId = UserToken.tokenVerify(token);//taking decoded token id
+		long userId = userToken.tokenVerify(token);//taking decoded token id
 		log.info("userId->"+userId);
 
 		Optional<User> checkVerify = userRepository.findById(userId).map(this::verify);
@@ -144,10 +145,10 @@ public class UserServicesImplementation implements IUserServices
 
 		user.setVarified(true);
 
-		 user.setAccount_update(LocalDateTime.now());
+		user.setAccount_update(LocalDateTime.now());
 
 		return userRepository.save(user);
-		
+
 	}
 
 	@Override
@@ -158,16 +159,16 @@ public class UserServicesImplementation implements IUserServices
 		Optional<User> user = userRepository.findByEmail(email);
 		if(!(user.isPresent()))
 		{
-			throw new UserException(environment.getProperty("13"));
+			throw new UserException(environment.getProperty("status.forgetPassword.invalidMail"),Integer.parseInt(environment.getProperty("status.forgetPassword.errorCode")));
 		}
 		long id = user.get().getUser_id();
 
 		//sending mail with reset link along with token
-		util.send(email, "PasswordReset", util.getBody("192.168.0.134:4200/resetPassword/",id));
+		EmailHelper.sendEmail(email, "PasswordReset", Util.getBody("192.168.0.134:4200/resetPassword/",id));
 
-		Response statusInfo = util.statusInfo(environment.getProperty("5"), 200);
-		
-		return statusInfo;
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.forgetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
+
+		return response;
 	}
 
 	@Override
@@ -175,7 +176,7 @@ public class UserServicesImplementation implements IUserServices
 	{
 		log.info("Token ->"+token+"\n password"+password);
 
-		long userId = UserToken.tokenVerify(token);
+		long userId = userToken.tokenVerify(token);
 		String encodedPassword = passwordEncoder.encode(password);
 		Optional<User> user = userRepository.findById(userId);
 		user.get().setPassword(encodedPassword);
@@ -188,16 +189,16 @@ public class UserServicesImplementation implements IUserServices
 
 		userRepository.save(user.get());
 
-		Response statusInfo = util.statusInfo(environment.getProperty("4"), 200);
-		return statusInfo;
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.resetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
+		return response;
 	}
-
-	@Override
-	public Response Test(String name) {
-		
-		Response statusInfo = util.statusInfo(environment.getProperty("1"), 200);
-		return statusInfo;
-
-	}
+//
+//	@Override
+//	public Response Test(String name) {
+//
+//		Response statusInfo = StatusHelper.statusInfo(environment.getProperty("1"), 200);
+//		return statusInfo;
+//
+//	}
 
 }

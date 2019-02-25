@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -17,15 +18,17 @@ import com.bridgelabz.fundoo.exception.TokenException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 @PropertySource("classpath:message.properties")
-public class UserToken {
+public class userToken {
 	
-//	@Autowired
-//	private static  Environment environment;
+	@Autowired
+	private Environment environment;
 	
 	//Secret key to generated token
-	 static String TOKEN_SECRET="Ansar";
+	 String TOKEN_SECRET;
 
+//	String TOKEN_SECRET="Ansar";
 	/**
 	 * 
 	 * @param id of user which mean claim/body 
@@ -33,8 +36,9 @@ public class UserToken {
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String generateToken(long id) 
+	public String generateToken(long id) 
 	{
+		TOKEN_SECRET=environment.getProperty("11");
 		Algorithm algorithm;
 
 		try {
@@ -45,8 +49,7 @@ public class UserToken {
 			return token;		
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error("Token Error"+e.getMessage());
-//			throw new TokenException(environment.getProperty("6"));
-			throw new TokenException("Error while Generating token");
+			throw new TokenException(environment.getProperty("6"));
 		}
 	}
 	
@@ -58,24 +61,23 @@ public class UserToken {
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static long tokenVerify(String token)
+	public long tokenVerify(String token)
 	{
 		long userid;
 		//here verify the given token's algorithm
 		Verification verification;
 		try {
-			verification = JWT.require(Algorithm.HMAC256(UserToken.TOKEN_SECRET));
+			verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
 			JWTVerifier jwtverifier=verification.build();
 			DecodedJWT decodedjwt=jwtverifier.verify(token);
 			Claim claim=decodedjwt.getClaim("ID");
 			userid=claim.asLong();	
 			System.out.println(userid);
-
+			log.info("Generated id from token"+Long.toString(userid));
 			return userid;
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error(e.getMessage());
-			//throw new TokenException(environment.getProperty("6"));
-			throw new TokenException("Error while Generating token");
+			throw new TokenException(environment.getProperty("6"));
 		}
 	}
 }

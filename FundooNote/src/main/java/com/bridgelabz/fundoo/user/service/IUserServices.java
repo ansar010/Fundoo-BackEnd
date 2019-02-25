@@ -8,7 +8,7 @@ import com.bridgelabz.fundoo.user.dto.UserDTO;
 public interface IUserServices
 {
 	public Response addUser(UserDTO userDTo); 
-	public Response Test(String name);
+//	public Response Test(String name);
 	public ResponseToken userLogin(LoginDTO loginDTO); 
 //	//	public void test(String string) throws MessagingException, UnsupportedEncodingException;
 //	public boolean isVerified();
@@ -16,6 +16,5 @@ public interface IUserServices
 //	
 	public Response forgetPassword(String email) ;
 	public Response resetPassword(String token,String password) ;
-//		
 }
 
