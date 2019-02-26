@@ -116,4 +116,5 @@ public class UserController
 			throw new UserException(statusMessge,statusCode);
 		}
 	}
+	
 }

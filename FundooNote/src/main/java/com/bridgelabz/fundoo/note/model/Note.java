@@ -7,11 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.bridgelabz.fundoo.user.model.User;
+import javax.validation.constraints.Future;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,16 +30,22 @@ public class Note
 	@Column(name="description",length=2000)
 	private String description;
 	
-	
+	@Future
 	private LocalDate createStamp;
 	
+	@Future
 	private LocalDate updateStamp;
 	
+	@Future
 	private LocalDate deleteStamp;
 	
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	private boolean isArchive;
+	private boolean isPin;
+	private boolean isTrash;
+	
+//	@ManyToOne
+//	@JoinColumn(name = "user_id")
+//	private User user;
 	
 	
 }

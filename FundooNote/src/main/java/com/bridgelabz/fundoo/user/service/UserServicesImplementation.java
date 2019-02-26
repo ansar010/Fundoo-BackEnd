@@ -74,8 +74,8 @@ public class UserServicesImplementation implements IUserServices
 			throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		}
 
-		System.out.println(user.getUser_id());
-		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
+		System.out.println(user.getUserId());
+		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.134:8080/user/useractivation/",user.getUserId()));
 		
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
@@ -100,7 +100,7 @@ public class UserServicesImplementation implements IUserServices
 		{
 			if(userEmail.isPresent()&&passwordEncoder.matches(loginDTO.getPassword(), userPassword))
 			{
-				String generatedToken = userToken.generateToken(userEmail.get().getUser_id());
+				String generatedToken = userToken.generateToken(userEmail.get().getUserId());
 
 				ResponseToken responseToken = StatusHelper.tokenStatusInfo(environment.getProperty("status.login.success"),Integer.parseInt(environment.getProperty("status.success.code")),generatedToken);
 
@@ -163,7 +163,7 @@ public class UserServicesImplementation implements IUserServices
 		{
 			throw new UserException(environment.getProperty("status.forgetPassword.invalidMail"),Integer.parseInt(environment.getProperty("status.forgetPassword.errorCode")));
 		}
-		long id = user.get().getUser_id();
+		long id = user.get().getUserId();
 
 		//sending mail with reset link along with token
 		mailHelper.send(email, "PasswordReset", mailHelper.getBody("192.168.0.134:4200/resetPassword/",id));
