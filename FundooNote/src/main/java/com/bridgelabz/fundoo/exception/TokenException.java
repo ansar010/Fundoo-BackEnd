@@ -4,18 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class TokenException extends RuntimeException
 {
 	private static final long serialVersionUID = 1L;
 
-	//private int errorCode;
-	//private String errorMessage; 
+	int errorCode;
 
-	public TokenException(String errorMessage)
-	{
-		super(errorMessage);
-		//this.errorMessage=errorMessage;
-		//this.errorCode=errorCode;
+	public TokenException(String msg,int errorCode) {
+		super(msg);
+		this.errorCode=errorCode;
 	}
 }

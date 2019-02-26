@@ -32,7 +32,12 @@ public class ApplicationConfiguration
 	{
 		return new Response();
 	}
-//	
+////	
+//	@Bean
+//	public UserToken getToken()
+//	{
+//		return new UserToken();
+//	}
 //	@Bean
 //	public ResponseToken getResponseToken()
 //	{

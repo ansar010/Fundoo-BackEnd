@@ -17,11 +17,9 @@ import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.model.User;
-import com.bridgelabz.fundoo.utility.EmailHelper;
-import com.bridgelabz.fundoo.utility.StatusHelper;
-import com.bridgelabz.fundoo.utility.Util;
-import com.bridgelabz.fundoo.utility.userToken;
-
+import com.bridgelabz.fundoo.util.StatusHelper;
+import com.bridgelabz.fundoo.util.UserToken;
+import com.bridgelabz.fundoo.util.MailHelper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,19 +29,24 @@ public class UserServicesImplementation implements IUserServices
 {
 
 	@Autowired
-	private IUserRepository userRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private ModelMapper modelMapper;
-
-	@Autowired
 	private Environment environment;
 	
 	@Autowired
-	private userToken userToken;
+	private IUserRepository userRepository;
+
+	@Autowired
+	MailHelper mailHelper;
+
+	@Autowired
+	private UserToken userToken;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	ModelMapper modelMapper;
+
+
 
 	@Override
 	public Response addUser(UserDTO userDTO)
@@ -72,10 +75,9 @@ public class UserServicesImplementation implements IUserServices
 		}
 
 		System.out.println(user.getUser_id());
-		EmailHelper.sendEmail(user.getEmail(), "User Activation", Util.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
-
+		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.134:8080/user/useractivation/",user.getUser_id()));
+		
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
-
 		return response;
 	}
 
@@ -109,7 +111,7 @@ public class UserServicesImplementation implements IUserServices
 			{
 				throw new UserException(environment.getProperty("status.login.invalidInput"),Integer.parseInt(environment.getProperty("status.login.errorCode")));
 
-				
+
 			}
 
 		}
@@ -164,7 +166,7 @@ public class UserServicesImplementation implements IUserServices
 		long id = user.get().getUser_id();
 
 		//sending mail with reset link along with token
-		EmailHelper.sendEmail(email, "PasswordReset", Util.getBody("192.168.0.134:4200/resetPassword/",id));
+		mailHelper.send(email, "PasswordReset", mailHelper.getBody("192.168.0.134:4200/resetPassword/",id));
 
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.forgetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -192,13 +194,4 @@ public class UserServicesImplementation implements IUserServices
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.resetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
 	}
-//
-//	@Override
-//	public Response Test(String name) {
-//
-//		Response statusInfo = StatusHelper.statusInfo(environment.getProperty("1"), 200);
-//		return statusInfo;
-//
-//	}
-
 }

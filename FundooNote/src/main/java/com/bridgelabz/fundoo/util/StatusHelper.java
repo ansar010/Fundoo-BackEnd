@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.utility;
+package com.bridgelabz.fundoo.util;
 
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;

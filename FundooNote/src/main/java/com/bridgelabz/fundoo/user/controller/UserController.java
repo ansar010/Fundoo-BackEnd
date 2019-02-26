@@ -39,7 +39,7 @@ public class UserController
 	static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
-	IUserServices userServices;
+	private IUserServices userServices;
 
 	@Autowired
 	private Environment environment;
@@ -52,25 +52,17 @@ public class UserController
 		logger.trace("User Registration");
 
 		bindingResult(bindingResult);
-		 
+
 		Response statusResponse = userServices.addUser(userDTO);
-		
+
 		return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
 	}
-	
-//	@PostMapping("/test")
-//	public ResponseEntity<Response> test(@RequestParam String name )
-//	{
-//	Response test = userServices.Test(name);
-//	return new ResponseEntity<Response>(test,HttpStatus.OK);
-//	}
-
 
 	@PostMapping("/login")
 	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) 	{
 		logger.info("Login Input "+loginDTO);
 		logger.trace("User Login");
-		
+
 		bindingResult(bindingResult);
 
 		ResponseToken userLoginResponse = userServices.userLogin(loginDTO);
@@ -79,15 +71,15 @@ public class UserController
 		return new ResponseEntity<ResponseToken>(userLoginResponse, HttpStatus.OK);
 	}
 
-	
+
 	@RequestMapping("/useractivation/{token}")
 	public ResponseEntity<String> userVerification(@PathVariable String token)
 	{
 		logger.info("Token ->"+token);
 		logger.trace("Email Verification");
-		
+
 		userServices.verifyToken(token);
-		
+
 		return new ResponseEntity<String>(environment.getProperty("status.activation.success"), HttpStatus.ACCEPTED);
 	}
 
@@ -97,7 +89,7 @@ public class UserController
 		logger.info("Email->"+userDto.getEmail());
 
 		Response statusInfo = userServices.forgetPassword(userDto.getEmail());
-	
+
 		return new ResponseEntity<Response>( statusInfo,HttpStatus.OK);
 	}
 
@@ -106,30 +98,21 @@ public class UserController
 	{
 		logger.info("Password->"+password);
 		logger.info("Token->"+token);
-		
+
 		Response resetPasswordResponse = userServices.resetPassword(token, password);
-		
+
 		return new ResponseEntity<Response>(resetPasswordResponse,HttpStatus.OK);
 	}
-
-
-	//	@RequestMapping("/testmail")
-	//	public String sendMail() throws MessagingException, UnsupportedEncodingException 
-	//	{
-	//		//util.send("bandgar09@gmail.com","Test mail from Spring", "Hello ");
-	//		//userServices.test("ansaruddeen030@gmail.com");
-	//		return "success";
-	//	}
 
 	private void bindingResult(BindingResult bindingResult)
 	{
 		if(bindingResult.hasErrors())
 		{
 			logger.error("Error while binding user details");
-			
-			String statusMessge=environment.getProperty("status.bindingResult.errorCode");
-			int statusCode=Integer.parseInt(environment.getProperty("status.bindingResult.invalidData"));
-			
+
+			String statusMessge=environment.getProperty("status.bindingResult.invalidData");
+			int statusCode=Integer.parseInt(environment.getProperty("status.bindingResult.errorCode"));
+
 			throw new UserException(statusMessge,statusCode);
 		}
 	}

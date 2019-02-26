@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.utility;
+package com.bridgelabz.fundoo.util;
 
 import java.io.UnsupportedEncodingException;
 
@@ -17,18 +17,17 @@ import com.bridgelabz.fundoo.exception.TokenException;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
+@Slf4j
 @PropertySource("classpath:message.properties")
-public class userToken {
+public class UserToken {
 	
 	@Autowired
-	private Environment environment;
-	
-	//Secret key to generated token
-	 String TOKEN_SECRET;
+	private   Environment environment;
 
-//	String TOKEN_SECRET="Ansar";
+	//Secret key to generated token
+	private static String TOKEN_SECRET;
+
 	/**
 	 * 
 	 * @param id of user which mean claim/body 
@@ -36,7 +35,7 @@ public class userToken {
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
-	public String generateToken(long id) 
+	public  String generateToken(long id) 
 	{
 		TOKEN_SECRET=environment.getProperty("11");
 		Algorithm algorithm;
@@ -49,7 +48,7 @@ public class userToken {
 			return token;		
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error("Token Error"+e.getMessage());
-			throw new TokenException(environment.getProperty("6"));
+			throw new TokenException(environment.getProperty("6"),600);
 		}
 	}
 	
@@ -61,23 +60,25 @@ public class userToken {
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
-	public long tokenVerify(String token)
+	public  long tokenVerify(String token)
 	{
+		TOKEN_SECRET=environment.getProperty("11");
+
 		long userid;
 		//here verify the given token's algorithm
 		Verification verification;
 		try {
-			verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
+			verification = JWT.require(Algorithm.HMAC256(UserToken.TOKEN_SECRET));
 			JWTVerifier jwtverifier=verification.build();
 			DecodedJWT decodedjwt=jwtverifier.verify(token);
 			Claim claim=decodedjwt.getClaim("ID");
 			userid=claim.asLong();	
 			System.out.println(userid);
-			log.info("Generated id from token"+Long.toString(userid));
+
 			return userid;
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			log.error(e.getMessage());
-			throw new TokenException(environment.getProperty("6"));
+			throw new TokenException(environment.getProperty("6"),600);
 		}
 	}
 }

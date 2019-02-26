@@ -1,5 +1,4 @@
-package com.bridgelabz.fundoo.utility;
-
+package com.bridgelabz.fundoo.util;
 import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;
@@ -9,13 +8,13 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
 
 import com.bridgelabz.fundoo.exception.EmailException;
+import com.bridgelabz.fundoo.util.UserToken;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public class EmailHelper 
+@Component
+public class MailHelper 
 {
 	/**
 	 * 
@@ -26,9 +25,12 @@ public class EmailHelper
 	 * @throws MessagingException
 	 */
 	@Autowired
-	private static JavaMailSender javaMailSender;	
+	private JavaMailSender javaMailSender;	
 	
-	public static void sendEmail(String to, String subject, String body)
+	@Autowired
+	private UserToken userToken;
+
+	public void send(String to, String subject, String body)
 	{
 
 		MimeMessage message = javaMailSender.createMimeMessage();
@@ -36,6 +38,7 @@ public class EmailHelper
 
 		
 		try {
+			
 			// multipart message
 			//helper.setFrom("NoReply-Fundoo");
 			helper = new MimeMessageHelper(message, true); // true indicates
@@ -50,14 +53,14 @@ public class EmailHelper
 
 			javaMailSender.send(message);
 		} catch (UnsupportedEncodingException | MessagingException e) {
-			log.error("Mail Exception"+e.getMessage());
-			throw new EmailException("Exception while sending mail");
+			throw new EmailException("Exception while sending mail",500);
 		}
 		//helper.setReplyTo((InternetAddress.parse("fundoonote19@gmail.com",false)));
 		
 	}
 	
-	
-	
-	
+	public String getBody(String link,long id) 
+	{
+		return link+userToken.generateToken(id);
+	}
 }
