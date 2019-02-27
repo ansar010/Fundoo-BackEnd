@@ -15,4 +15,5 @@ public interface IUserRepository extends CrudRepository<User, Long>
 	public Optional<User> findBypassword(String password);
 //	@Query(value="select password from user",nativeQuery=true)
 //	public List<Object[]> findPassword();
-}
+
+} 

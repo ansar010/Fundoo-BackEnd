@@ -1,14 +1,17 @@
 package com.bridgelabz.fundoo.note.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Future;
+
+import com.bridgelabz.fundoo.user.model.User;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,22 +33,20 @@ public class Note
 	@Column(name="description",length=2000)
 	private String description;
 	
-	@Future
-	private LocalDate createStamp;
+	private LocalDateTime createStamp;
 	
-	@Future
-	private LocalDate updateStamp;
+	private LocalDateTime updateStamp;
 	
-	@Future
-	private LocalDate deleteStamp;
+	private LocalDateTime deleteStamp;
 	
 	private boolean isArchive;
 	private boolean isPin;
 	private boolean isTrash;
 	
+	
 //	@ManyToOne
 //	@JoinColumn(name = "user_id")
-//	private User user;
-	
+//	private User userId;
+//	
 	
 }

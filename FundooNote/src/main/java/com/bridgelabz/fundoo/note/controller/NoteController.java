@@ -31,8 +31,8 @@ public class NoteController {
 	@Autowired
 	Environment environment;
 	
-	@Autowired
-	Response response;
+//	@Autowired
+//	Response response;
 
 	@PostMapping
 	public ResponseEntity<Response> createNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,@RequestHeader("token") String token)
@@ -43,10 +43,7 @@ public class NoteController {
 		bindingResult(bindingResult);
 		customValidation(noteDTO);
 		
-		noteService.addNote(noteDTO, token);
-		
-		response.setStatusCode(200);
-		response.setStatusMessage(environment.getProperty("7"));
+		Response response = noteService.addNote(noteDTO, token);
 		
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
 	}

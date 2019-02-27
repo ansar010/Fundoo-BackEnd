@@ -2,7 +2,7 @@ package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,8 +17,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-
-import org.hibernate.validator.constraints.Length;
 
 import com.bridgelabz.fundoo.note.model.Note;
 
@@ -67,7 +65,10 @@ public class User implements Serializable
 	private String password;
 
 	//O to many using Unidirectional
+//	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
 	@OneToMany(targetEntity=Note.class,cascade=CascadeType.ALL,fetch=FetchType.LAZY)
 	@JoinColumn(name="user_id",referencedColumnName="userId")
-	private Set<Note> notes;//To build O to Many relation
+	private List<Note> notes;//To build O to Many relation
+//	private Note notes;//To build O to Many relation
+
 }
