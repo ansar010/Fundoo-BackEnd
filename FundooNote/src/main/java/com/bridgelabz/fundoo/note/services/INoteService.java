@@ -1,13 +1,18 @@
 package com.bridgelabz.fundoo.note.services;
 
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
 
 public interface INoteService {
 
 	Response createNote(NoteDTO noteDTO, String token);
 
-	Response updateNote(NoteDTO noteDTO, String token);
+	Response updateNote(Note note, String token);
+
+	Response deleteForever(long noteId, String token);
+
+	Response trashStatus(long noteId, String token);
 
 //	public Response addNote(NoteDTO note , String token);
 

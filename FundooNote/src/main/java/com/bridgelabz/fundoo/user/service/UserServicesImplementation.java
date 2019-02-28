@@ -149,6 +149,8 @@ public class UserServicesImplementation implements IUserServices
 
 		user.setAccount_update(LocalDateTime.now());
 
+		System.out.println("user "+user);
+		
 		return userRepository.save(user);
 
 	}

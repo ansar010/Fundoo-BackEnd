@@ -6,6 +6,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.exception.NoteException;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.services.INoteService;
 import com.bridgelabz.fundoo.response.Response;
 
@@ -50,15 +53,39 @@ public class NoteController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,@RequestHeader("token") String token)
+	public ResponseEntity<Response> updateNote(@RequestBody Note note,BindingResult bindingResult,@RequestHeader("token") String token)
 	{
-		log.info("Note-->"+noteDTO);
+		log.info("Note-->"+note);
 		log.info("token-->"+token);
 		
 		bindingResult(bindingResult);
-		customValidation(noteDTO);
+//		customValidation(note);
 		
-		Response response = noteService.updateNote(noteDTO, token);
+		Response response = noteService.updateNote(note, token);
+		
+		return new ResponseEntity<>(response,HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping("/{noteId}")
+	public ResponseEntity<Response> deleteNotePermenant(@PathVariable long noteId,@RequestHeader("token") String token)
+	{
+		log.info("Note-->"+noteId);
+		log.info("token-->"+token);
+		
+		
+		Response response = noteService.deleteForever(noteId, token);
+		
+		return new ResponseEntity<>(response,HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/{noteId}")
+	public ResponseEntity<Response> trashStatus(@PathVariable long noteId,@RequestHeader("token") String token)
+	{
+		log.info("Note-->"+noteId);
+		log.info("token-->"+token);
+		
+		
+		Response response = noteService.trashStatus(noteId, token);
 		
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
 	}
