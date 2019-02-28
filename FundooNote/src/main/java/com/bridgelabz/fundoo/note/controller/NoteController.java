@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +32,9 @@ public class NoteController {
 	@Autowired
 	Environment environment;
 	
-//	@Autowired
-//	Response response;
-
+	@Autowired
+	Response response;
+		
 	@PostMapping
 	public ResponseEntity<Response> createNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,@RequestHeader("token") String token)
 	{
@@ -43,10 +44,44 @@ public class NoteController {
 		bindingResult(bindingResult);
 		customValidation(noteDTO);
 		
-		Response response = noteService.addNote(noteDTO, token);
+		Response response = noteService.createNote(noteDTO, token);
 		
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
 	}
+	
+	@PutMapping
+	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,@RequestHeader("token") String token)
+	{
+		log.info("Note-->"+noteDTO);
+		log.info("token-->"+token);
+		
+		bindingResult(bindingResult);
+		customValidation(noteDTO);
+		
+		Response response = noteService.updateNote(noteDTO, token);
+		
+		return new ResponseEntity<>(response,HttpStatus.CREATED);
+	}
+	
+//	@PutMapping
+//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
+//												@RequestHeader("token") String token,@RequestParam long noteId)
+//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
+//			@RequestHeader("token") String token)
+//
+//	{
+//		log.info("Note-->"+noteDTO);
+//		log.info("token-->"+token);
+//		
+//		bindingResult(bindingResult);
+//		customValidation(noteDTO);
+//		
+////		Response response = noteService.updateNote(noteDTO, token,noteId);
+//		Response response = noteService.updateNote(noteDTO, token);
+//
+//		
+//		return new ResponseEntity<>(response,HttpStatus.CREATED);
+//	}
 	
 //	@PutMapping
 //	public ResponseEntity<ResponseToken> updateNote(@RequestBody NoteDTO noteDTO,@RequestHeader("token") String token)

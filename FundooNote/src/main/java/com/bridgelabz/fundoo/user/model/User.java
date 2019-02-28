@@ -2,7 +2,7 @@ package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -64,11 +63,12 @@ public class User implements Serializable
 	@Column(name="password")
 	private String password;
 
-	//O to many using Unidirectional
-//	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
-	@OneToMany(targetEntity=Note.class,cascade=CascadeType.ALL,fetch=FetchType.LAZY)
-	@JoinColumn(name="user_id",referencedColumnName="userId")
-	private List<Note> notes;//To build O to Many relation
-//	private Note notes;//To build O to Many relation
+//	//O to many using Unidirectional
+////	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
+////	@OneToMany(targetEntity=Note.class,cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
+//
+//    @OneToMany(mappedBy = "userId",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+//	private Set<Note> notes;//To build O to Many relation
+////	private Note notes;//To build O to Many relation
 
 }
