@@ -1,6 +1,8 @@
 package com.bridgelabz.fundoo.note.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -160,6 +162,112 @@ public class NoteServiceImp implements INoteService
 				Integer.parseInt(environment.getProperty("status.success.code")));
 
 		return response;
+	}
+
+	@Override
+	public Response pinStatus(long noteId, String token)
+	{
+	
+		log.info("Note id->"+noteId);
+		log.info("Token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+		log.info(Long.toString(userId));
+
+		Optional<Note> note = noteRepository.findById(noteId);
+		long dbuserId = note.get().getUser().getUserId();
+
+		if(dbuserId==userId)
+		{
+			if(note.get().isPin()==true)
+			{
+				note.get().setPin(false);
+			
+			}
+			else
+			{
+				note.get().setPin(true);
+			}
+			noteRepository.save(note.get());
+
+			
+			
+			
+		}
+//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
+//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
+//		return response;
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.pinned.successMsg"),
+				Integer.parseInt(environment.getProperty("status.success.code")));
+
+		return response;
+	}
+
+	@Override
+	public Response archiveStatus(long noteId, String token) 
+	{
+	
+
+		log.info("Note id->"+noteId);
+		log.info("Token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+		log.info(Long.toString(userId));
+
+		Optional<Note> note = noteRepository.findById(noteId);
+		long dbuserId = note.get().getUser().getUserId();
+
+		if(dbuserId==userId)
+		{
+			if(note.get().isArchive()==true)
+			{
+				note.get().setArchive(false);
+			
+			}
+			else
+			{
+				note.get().setArchive(true);
+			}
+			noteRepository.save(note.get());
+
+			
+			
+			
+		}
+//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
+//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
+//		return response;
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.archive.successMsg"),
+				Integer.parseInt(environment.getProperty("status.success.code")));
+
+		return response;
+	}
+
+	@Override
+	public List<Note> getAllNote(String token) 
+	{
+		log.info("Token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+		log.info(Long.toString(userId));
+		
+//		List<Note> noteRepository.findByUser_id(userId);
+	
+		List<Note> listNote = noteRepository.findAll();
+		
+		List<Note> list = new ArrayList<>();
+		
+		for (int i = 0; i < listNote.size(); i++) {
+			if(listNote.get(i).getUser().getUserId()==userId)
+			{
+				list.add(listNote.get(i));
+			}
+		}
+	
+		return list;
+//		List<Note> notes = noteRepository.findAllByUserId(userId);
+//		System.out.println("notes"+notes);
+
 	}
 
 	//	Note note;
