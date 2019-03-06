@@ -75,7 +75,7 @@ public class UserServicesImplementation implements IUserServices
 		}
 
 		System.out.println(user.getUserId());
-		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.134:8080/user/useractivation/",user.getUserId()));
+		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
 		
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
@@ -168,7 +168,7 @@ public class UserServicesImplementation implements IUserServices
 		long id = user.get().getUserId();
 
 		//sending mail with reset link along with token
-		mailHelper.send(email, "PasswordReset", mailHelper.getBody("192.168.0.134:4200/resetPassword/",id));
+		mailHelper.send(email, "PasswordReset", mailHelper.getBody("192.168.0.56:4200/resetPassword/",id));
 
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.forgetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 

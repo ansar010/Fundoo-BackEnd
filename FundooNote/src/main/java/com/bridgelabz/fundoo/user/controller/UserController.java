@@ -28,7 +28,7 @@ import com.bridgelabz.fundoo.user.service.IUserServices;
 
 @RestController
 @CrossOrigin(origins = "*" ,allowedHeaders = "*")
-// .@CrossOrigin(origins= {"http://localhost:4200"},allowedHeaders = "*",exposedHeaders= {"jwtToken"})
+// @CrossOrigin(origins= {"http://localhost:4202"},allowedHeaders = "*",exposedHeaders= {"jwtToken"})
 
 @RequestMapping("/user")
 
