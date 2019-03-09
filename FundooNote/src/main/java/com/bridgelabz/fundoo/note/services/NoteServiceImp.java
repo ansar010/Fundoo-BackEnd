@@ -143,7 +143,12 @@ public class NoteServiceImp implements INoteService
 			if(note.get().isTrash()==true)
 			{
 				note.get().setTrash(false);
-			
+				noteRepository.save(note.get());
+				
+				Response response = StatusHelper.statusInfo(environment.getProperty("status.restore.successMsg"),
+						Integer.parseInt(environment.getProperty("status.success.code")));
+
+				return response;
 			}
 			else
 			{

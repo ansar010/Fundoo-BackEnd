@@ -3,6 +3,8 @@ package com.bridgelabz.fundoo.user.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -49,7 +51,7 @@ public class UserServicesImplementation implements IUserServices
 
 
 	@Override
-	public Response addUser(UserDTO userDTO)
+	public Response addUser(UserDTO userDTO,HttpServletRequest request)
 	{
 		log.info(userDTO.toString());
 
@@ -73,10 +75,13 @@ public class UserServicesImplementation implements IUserServices
 		{
 			throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		}
-
+		StringBuffer requesturl=request.getRequestURL();
+		String url=requesturl.substring(0, requesturl.lastIndexOf("/"));
+		System.out.println("url : "+url);
 		System.out.println(user.getUserId());
-		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
-		
+//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
+		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody(url+"/useractivation/",user.getUserId()));
+
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
 	}

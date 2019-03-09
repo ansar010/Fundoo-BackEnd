@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.user.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -46,14 +47,14 @@ public class UserController
 
 
 	@PostMapping("/register")
-	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult)
+	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult, HttpServletRequest request)
 	{
 		logger.info("userDTO data"+userDTO.toString());
 		logger.trace("User Registration");
 
 		bindingResult(bindingResult);
 
-		Response statusResponse = userServices.addUser(userDTO);
+		Response statusResponse = userServices.addUser(userDTO,request);
 
 		return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
 	}
