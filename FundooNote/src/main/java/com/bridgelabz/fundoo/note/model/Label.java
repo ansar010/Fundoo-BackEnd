@@ -2,7 +2,6 @@ package com.bridgelabz.fundoo.note.model;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import com.bridgelabz.fundoo.user.model.User;
 
@@ -19,34 +19,24 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="note_details")
-public class Note 
+@Table(name="Label_Details")
+public class Label 
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="noteId")
-	private long noteId;	 
+	private long id;
 	
-	@Column(name="title")
-	private String title;
-	
-	@Column(name="description",length=2000)
-	private String description;
-	
+	@NotEmpty
+	private String labelName;
+
 	private LocalDateTime createStamp;
 	
 	private LocalDateTime updateStamp;
 	
 	private LocalDateTime deleteStamp;
-	
-	private boolean isArchive;
-	private boolean isPin;
-	private boolean isTrash;
-	
-//	@ManyToOne
-//	@JoinColumn(name="user_id",referencedColumnName="userId")
-//    private User userId;
+
 	@ManyToOne
 	@JoinColumn(name="userId")
 	private User user;
+
 }

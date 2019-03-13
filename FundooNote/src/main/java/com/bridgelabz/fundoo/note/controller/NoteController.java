@@ -49,7 +49,7 @@ public class NoteController {
 	{
 		log.info("Note-->"+noteDTO);
 		log.info("token-->"+token);
-		
+//		log.info(request.getAttribute("token").toString());
 		bindingResult(bindingResult);
 		customValidation(noteDTO);
 		
@@ -179,6 +179,7 @@ public class NoteController {
 
 	private void customValidation(NoteDTO noteDTO)
 	{
+		log.error("note empty validation");
 		if((noteDTO.getTitle().isEmpty())&&(noteDTO.getDescription().isEmpty()))
 		{
 			String statusMessge=environment.getProperty("status.note.validation");

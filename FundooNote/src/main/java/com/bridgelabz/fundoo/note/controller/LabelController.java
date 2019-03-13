@@ -1,0 +1,87 @@
+package com.bridgelabz.fundoo.note.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bridgelabz.fundoo.exception.LabelException;
+import com.bridgelabz.fundoo.note.dto.LabelDTO;
+import com.bridgelabz.fundoo.note.services.ILabelService;
+import com.bridgelabz.fundoo.response.Response;
+
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@PropertySource("classpath:message.properties")
+@RestController
+@RequestMapping("/user/label")
+public class LabelController 
+{
+	@Autowired
+	Environment environment;
+	
+	@Autowired
+	ILabelService lableService;
+
+	@PostMapping
+	@ApiOperation(value="This api for create label...")
+	public ResponseEntity<Response> createLabel(@RequestBody LabelDTO labelDTO, @RequestHeader String token)
+	{
+		log.info("Label-->"+labelDTO);
+		log.info("token-->"+token);
+	
+		isEmptyLabel(labelDTO);
+		Response response = lableService.createLabel(labelDTO,token);
+		
+		return new ResponseEntity<>(response,HttpStatus.CREATED);
+	}
+	
+	@PutMapping
+	@ApiOperation(value="This api for update label...")
+	public ResponseEntity<Response> updateLabel(@RequestParam long labelId,@RequestBody LabelDTO labelDTO, @RequestHeader String token)
+	{
+		log.info("Label-->"+labelDTO);
+		log.info("token-->"+token);
+		
+		isEmptyLabel(labelDTO);
+		Response response = lableService.updateLabel(labelId,labelDTO,token);
+		
+		return new ResponseEntity<>(response,HttpStatus.OK);
+	}
+
+	@DeleteMapping
+	@ApiOperation(value="This api for delete note...")
+	public ResponseEntity<Response> deleteLabel(@RequestParam long labelId, @RequestHeader String token)
+	{
+		log.info("token-->"+token);
+	
+		Response response = lableService.deleteLabel(labelId,token);
+		
+		return new ResponseEntity<>(response,HttpStatus.CREATED);
+	}
+	private void isEmptyLabel(LabelDTO labelDTO)
+	{
+		log.info("label details"+labelDTO.toString());
+		log.error("label empty validation");
+
+		if(labelDTO.getLabelName().isEmpty()) {
+			
+			String statusMessge=environment.getProperty("status.label.validation");
+			
+			int statusCode=Integer.parseInt(environment.getProperty("status.labelValidation.errorCode"));
+			
+			throw new LabelException(statusMessge,statusCode);
+		}
+	}
+}

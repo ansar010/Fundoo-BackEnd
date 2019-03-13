@@ -6,6 +6,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,9 @@ public class MailHelper
 	
 	@Autowired
 	private UserToken userToken;
+	
+	@Value("${mailID}")
+	String mailId;
 
 	public void send(String to, String subject, String body)
 	{
@@ -45,7 +49,8 @@ public class MailHelper
 
 			helper.setFrom(new InternetAddress("example@gmail.com", "NoReply-fundoo"));
 			
-			helper.setReplyTo("fundoonote19@gmail.com");
+//			helper.setReplyTo("fundoonote19@gmail.com");
+			helper.setReplyTo(mailId);
 			helper.setSubject(subject);
 			helper.setTo(to);
 			helper.setText(body, true); // true indicates html
