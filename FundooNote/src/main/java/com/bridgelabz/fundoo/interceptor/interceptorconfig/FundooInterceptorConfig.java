@@ -11,12 +11,12 @@
 //{
 //	@Autowired
 //	FundooInterceptorHandler interceptorHandler;
-//	
+//		
 //	@Override
 //	public void addInterceptors(InterceptorRegistry registry) {
-//		registry.addInterceptor(interceptorHandler);
-//		// TODO Auto-generated method stub
-//		WebMvcConfigurer.super.addInterceptors(registry);
+//		registry.addInterceptor(interceptorHandler).addPathPatterns("/**");
+//		
+////		WebMvcConfigurer.super.addInterceptors(registry);
 //	}
 //
 //}

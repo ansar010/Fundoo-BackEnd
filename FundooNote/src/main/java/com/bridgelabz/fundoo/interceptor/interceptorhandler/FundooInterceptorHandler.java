@@ -22,11 +22,13 @@
 //	@Override
 //	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 //			throws Exception {
-////		log.info("request api: "+request.getRequestURI());
-////		String token = request.getHeader("token");
-////		
-////		long userID = userToken.tokenVerify(token);
-////		request.setAttribute("token", userID);
+//		log.info("In Interceptor");
+//		log.info("request api: "+request.getRequestURI());
+//		String token = request.getHeader("token");
+//		
+//		long userID = userToken.tokenVerify(token);
+//		request.setAttribute("token", userID);
+//		
 //		//		return HandlerInterceptor.super.preHandle(request, response, handler);
 //		return true;
 //	}

@@ -81,7 +81,7 @@ public class NoteServiceImp implements INoteService
 		//User user = userRepository.findById(userId).orElse(th)
 		note.setUpdateStamp(LocalDateTime.now());
 
-		Optional<Note> dbNote = noteRepository.findById(note.getNoteId());
+		Optional<Note> dbNote = noteRepository.findById(note.getId());
 
 		long dbUserId = dbNote.get().getUser().getUserId();
 
