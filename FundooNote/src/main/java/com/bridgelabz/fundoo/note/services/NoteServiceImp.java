@@ -69,35 +69,88 @@ public class NoteServiceImp implements INoteService
 		return response;
 	}
 
+		@Override
+		public Response updateNote(Note note, String token) 
+		{
+			log.info("user note->"+note.toString());
+			log.info("Token->"+token);
+	
+			long userId = userToken.tokenVerify(token);
+			log.info(Long.toString(userId));
+	
+			//User user = userRepository.findById(userId).orElse(th)
+			note.setUpdateStamp(LocalDateTime.now());
+	
+			Optional<Note> dbNote = noteRepository.findById(note.getId());
+	
+			long dbUserId = dbNote.get().getUser().getUserId();
+	
+			if(dbUserId==userId&&dbNote.isPresent())
+			{
+	
+				noteRepository.save(note);
+				Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
+						Integer.parseInt(environment.getProperty("status.success.code")));
+	
+				return response;
+			}
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
+					Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
+			return response;	
+		}
+
+//	@Override
+//	public Response updateNote(long noteId,NoteDTO noteDTO, String token) {
+//		log.info("note id->"+noteId);
+//		log.info("noteDto->"+noteDTO);
+//		log.info("token->"+token);
+//
+//		long userId = userToken.tokenVerify(token);
+//		//		Note note = modelMapper.map(noteDTO, Note.class);
+//
+//		Optional<Note> dbNote = noteRepository.findById(noteId);
+//		long dbUserId = dbNote.get().getUser().getUserId();
+//
+//		if(dbUserId==userId&&dbNote.isPresent())
+//		{
+//			//			note.setUpdateStamp(LocalDateTime.now());
+//			//			note.setId(noteId);
+//			//			Note status = noteRepository.save(note);
+//			dbNote.get().setUpdateStamp(LocalDateTime.now());
+//			dbNote.get().setTitle(noteDTO.getTitle());
+//			dbNote.get().setDescription(noteDTO.getDescription());
+//			dbNote.get().setColor(noteDTO.getColor());
+//			Note status = noteRepository.save(dbNote.get());
+//			if(status.equals(null))
+//			{
+//				Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
+//						Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
+//				return response;	
+//			}
+//			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
+//					Integer.parseInt(environment.getProperty("status.success.code")));
+//
+//			return response;
+//
+//		}
+//
+//		return null;
+//	}
+
 	@Override
-	public Response updateNote(Note note, String token) 
-	{
-		log.info("user note->"+note.toString());
+	public List<Note> getAllNoteLists(String token, String isArchive, String isTrash) {
+
 		log.info("Token->"+token);
+		log.info("isArchive->"+isArchive);
+		log.info("isTrash->"+isTrash);
 
 		long userId = userToken.tokenVerify(token);
-		log.info(Long.toString(userId));
 
-		//User user = userRepository.findById(userId).orElse(th)
-		note.setUpdateStamp(LocalDateTime.now());
+		Optional<List<Note>> list_of_notes = noteRepository.findAllById(userId, Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
 
-		Optional<Note> dbNote = noteRepository.findById(note.getId());
-
-		long dbUserId = dbNote.get().getUser().getUserId();
-
-		if(dbUserId==userId&&dbNote.isPresent())
-		{
-
-			noteRepository.save(note);
-			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
-					Integer.parseInt(environment.getProperty("status.success.code")));
-
-			return response;
-		}
-		Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
-				Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
-		return response;	
+		return list_of_notes.get();
 	}
+
 
 	@Override
 	public Response deleteForever(long noteId, String token)
@@ -128,7 +181,7 @@ public class NoteServiceImp implements INoteService
 	@Override
 	public Response trashStatus(long noteId, String token) 
 	{
-		
+
 		log.info("Note id->"+noteId);
 		log.info("Token->"+token);
 
@@ -144,7 +197,7 @@ public class NoteServiceImp implements INoteService
 			{
 				note.get().setTrash(false);
 				noteRepository.save(note.get());
-				
+
 				Response response = StatusHelper.statusInfo(environment.getProperty("status.restore.successMsg"),
 						Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -156,13 +209,13 @@ public class NoteServiceImp implements INoteService
 			}
 			noteRepository.save(note.get());
 
-			
-			
-			
+
+
+
 		}
-//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
-//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
-//		return response;
+		//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
+		//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
+		//		return response;
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.successMsg"),
 				Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -172,7 +225,7 @@ public class NoteServiceImp implements INoteService
 	@Override
 	public Response pinStatus(long noteId, String token)
 	{
-	
+
 		log.info("Note id->"+noteId);
 		log.info("Token->"+token);
 
@@ -187,21 +240,21 @@ public class NoteServiceImp implements INoteService
 			if(note.get().isPin()==true)
 			{
 				note.get().setPin(false);
-			
+				
+				Response response = StatusHelper.statusInfo(environment.getProperty("status.unarchive.successMsg"),
+						Integer.parseInt(environment.getProperty("status.success.code")));
+
+				return response;
 			}
 			else
 			{
 				note.get().setPin(true);
 			}
 			noteRepository.save(note.get());
-
-			
-			
-			
 		}
-//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
-//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
-//		return response;
+		//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
+		//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
+		//		return response;
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.pinned.successMsg"),
 				Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -211,7 +264,7 @@ public class NoteServiceImp implements INoteService
 	@Override
 	public Response archiveStatus(long noteId, String token) 
 	{
-	
+
 
 		log.info("Note id->"+noteId);
 		log.info("Token->"+token);
@@ -227,21 +280,23 @@ public class NoteServiceImp implements INoteService
 			if(note.get().isArchive()==true)
 			{
 				note.get().setArchive(false);
-			
+
+				noteRepository.save(note.get());
+
+				Response response = StatusHelper.statusInfo(environment.getProperty("status.unarchive.successMsg"),
+						Integer.parseInt(environment.getProperty("status.success.code")));
+
+				return response;
 			}
 			else
 			{
 				note.get().setArchive(true);
 			}
 			noteRepository.save(note.get());
-
-			
-			
-			
 		}
-//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
-//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
-//		return response;
+		//		Response response = StatusHelper.statusInfo(environment.getProperty("status.moveTrash.errorMsg"),
+		//				Integer.parseInt(environment.getProperty("status.deleteForever.errorCode")));
+		//		return response;
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.archive.successMsg"),
 				Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -255,23 +310,23 @@ public class NoteServiceImp implements INoteService
 
 		long userId = userToken.tokenVerify(token);
 		log.info(Long.toString(userId));
-		
-//		List<Note> noteRepository.findByUser_id(userId);
-	
+
+		//		List<Note> noteRepository.findByUser_id(userId);
+
 		List<Note> listNote = noteRepository.findAll();
-		
+
 		List<Note> list = new ArrayList<>();
-		
+
 		for (int i = 0; i < listNote.size(); i++) {
 			if(listNote.get(i).getUser().getUserId()==userId)
 			{
 				list.add(listNote.get(i));
 			}
 		}
-	
+
 		return list;
-//		List<Note> notes = noteRepository.findAllByUserId(userId);
-//		System.out.println("notes"+notes);
+		//		List<Note> notes = noteRepository.findAllByUserId(userId);
+		//		System.out.println("notes"+notes);
 
 	}
 

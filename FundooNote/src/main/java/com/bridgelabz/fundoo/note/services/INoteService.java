@@ -22,6 +22,11 @@ public interface INoteService {
 
 	List<Note> getAllNote(String token);
 	
+//	Response updateNote(long noteId,NoteDTO noteDTO, String token);
+
+//	List<NoteLists> getAllNoteLists(String token, String isArchive, String isTrash);
+
+	List<Note> getAllNoteLists(String token, String isArchive, String isTrash);
 	
 
 //	public Response addNote(NoteDTO note , String token);

@@ -45,6 +45,8 @@ public class Note
 	private boolean isPin;
 	private boolean isTrash;
 	
+	private String color;
+
 //	@ManyToOne
 //	@JoinColumn(name="user_id",referencedColumnName="userId")
 //    private User userId;
