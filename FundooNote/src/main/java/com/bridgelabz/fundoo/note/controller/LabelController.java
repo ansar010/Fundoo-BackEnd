@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @PropertySource("classpath:message.properties")
 @RestController
+@CrossOrigin(origins = "*" ,allowedHeaders = "*")
 @RequestMapping("/user/label")
 public class LabelController 
 {
@@ -118,7 +120,7 @@ public class LabelController
 		log.info("label details"+labelDTO.toString());
 		log.error("label empty validation");
 
-		if(labelDTO.getLabelName().isEmpty()) {
+		if(labelDTO.getLabelName().isEmpty()||labelDTO.getLabelName()==null) {
 			
 			String statusMessge=environment.getProperty("status.label.validation");
 			

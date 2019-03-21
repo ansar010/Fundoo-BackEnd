@@ -51,10 +51,10 @@ public class NoteServiceImp implements INoteService
 
 		long userId = userToken.tokenVerify(token);
 		log.info(Long.toString(userId));
-
+		System.out.println(noteDTO.isPin());
 		//transfer DTO data into Model
 		Note note = modelMapper.map(noteDTO, Note.class);
-
+		System.out.println(noteDTO.getTitle());
 		Optional<User> user = userRepository.findById(userId);
 
 		note.setUser(user.get());
@@ -241,7 +241,9 @@ public class NoteServiceImp implements INoteService
 			{
 				note.get().setPin(false);
 				
-				Response response = StatusHelper.statusInfo(environment.getProperty("status.unarchive.successMsg"),
+				noteRepository.save(note.get());
+
+				Response response = StatusHelper.statusInfo(environment.getProperty("status.unpin.successMsg"),
 						Integer.parseInt(environment.getProperty("status.success.code")));
 
 				return response;

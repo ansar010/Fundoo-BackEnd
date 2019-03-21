@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.bridgelabz.fundoo.user.model.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,8 +42,16 @@ public class Note
 	
 	private LocalDateTime deleteStamp;
 	
+	@JsonProperty
+	@Column(columnDefinition="tinyint(1) default 0 not null")
 	private boolean isArchive;
+	
+	@JsonProperty
+	@Column(columnDefinition="tinyint(1) default 0 not null")
 	private boolean isPin;
+	
+	@JsonProperty
+	@Column(columnDefinition="tinyint(1) default 0 not null")
 	private boolean isTrash;
 	
 	private String color;
