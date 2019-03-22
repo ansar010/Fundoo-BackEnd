@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.exception.NoteException;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
-import com.bridgelabz.fundoo.note.dto.NoteLists;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.services.INoteService;
 import com.bridgelabz.fundoo.response.Response;
@@ -147,7 +146,7 @@ public class NoteController {
 	public ResponseEntity<List<Note>> getAllNoteList(@RequestHeader("token") String token,@RequestParam String isArchive,@RequestParam String isTrash)
 	{
 		log.info("token-->"+token);
-
+		log.info("Get all note List called ");
 
 		List<Note> listOfNotes= noteService.getAllNoteLists( token,isArchive,isTrash);
 
@@ -164,6 +163,8 @@ public class NoteController {
 
 		return new ResponseEntity<>(listOfNotes,HttpStatus.CREATED);
 	}
+	
+	
 	//	@PutMapping
 	//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
 	//												@RequestHeader("token") String token,@RequestParam long noteId)

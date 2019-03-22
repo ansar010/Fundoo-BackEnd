@@ -91,7 +91,7 @@ public class LabelController
 	
 	@PostMapping("/addLabeltonote")
 	@ApiOperation(value="This api for add label into note...")
-	public ResponseEntity<Response> addLabelToNote(@RequestParam long labelId, @RequestHeader String token , long noteId)
+	public ResponseEntity<Response> addLabelToNote(@RequestParam long labelId, @RequestHeader String token ,@RequestParam long noteId)
 	{
 		log.info("token-->"+token);
 		log.info("labelId-->"+labelId);
