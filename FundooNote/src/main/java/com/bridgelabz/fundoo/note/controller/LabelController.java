@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:message.properties")
 @RestController
 @CrossOrigin(origins = "*" ,allowedHeaders = "*")
+
 @RequestMapping("/user/label")
 public class LabelController 
 {
@@ -91,7 +92,7 @@ public class LabelController
 	
 	@PostMapping("/addLabeltonote")
 	@ApiOperation(value="This api for add label into note...")
-	public ResponseEntity<Response> addLabelToNote(@RequestParam long labelId, @RequestHeader String token ,@RequestParam long noteId)
+	public ResponseEntity<Response> addLabelToNote(@RequestParam long labelId, @RequestParam long noteId, @RequestHeader("token") String token )
 	{
 		log.info("token-->"+token);
 		log.info("labelId-->"+labelId);
