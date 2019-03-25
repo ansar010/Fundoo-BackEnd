@@ -60,7 +60,16 @@ public class LabelServiceImp implements ILabelService
 		Optional<User> user = userRepository.findById(userId);
 
 		Label label = modelMapper.map(labelDTO, Label.class);
+		Optional<Label> Check = labelRepository.findBylabelName(label.getLabelName());
+		if(Check.isPresent())
+		{
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.labelCreate.errorMsg"),
+					Integer.parseInt(environment.getProperty("status.error.code")));
 
+			return response;
+		}else {
+			
+		
 		label.setUser(user.get());
 		label.setCreateStamp(LocalDateTime.now());
 		labelRepository.save(label);
@@ -69,6 +78,7 @@ public class LabelServiceImp implements ILabelService
 				Integer.parseInt(environment.getProperty("status.success.code")));
 
 		return response;
+		}
 	}
 
 	@Override
