@@ -164,7 +164,7 @@ public class LabelServiceImp implements ILabelService
 
 		if(note.get().getUser().getUserId()==userId && label.get().getUser().getUserId()==userId)
 		{
-			note.get().getLabel().add(label.get());
+			note.get().getLabels().add(label.get());
 			label.get().getNotes().add(note.get());
 			noteRepository.save(note.get());
 			labelRepository.save(label.get());
@@ -193,7 +193,7 @@ public class LabelServiceImp implements ILabelService
 
 		if(note.get().getUser().getUserId()==userId && label.get().getUser().getUserId()==userId)
 		{
-			note.get().getLabel().remove(label.get());
+			note.get().getLabels().remove(label.get());
 			label.get().getNotes().remove(note.get());
 			noteRepository.save(note.get());
 			labelRepository.save(label.get());

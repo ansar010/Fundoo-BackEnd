@@ -66,6 +66,6 @@ public class Note
 	
 	// Performing mapping to consist collection of  labels
 	@ManyToMany(mappedBy="notes")
-	private Set<Label> label;
+	private Set<Label> labels;
 	
 }
