@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.exception.NoteException;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
@@ -50,7 +51,7 @@ public class NoteController {
 	{
 		log.info("Note-->"+noteDTO);
 		log.info("token-->"+token);
-		//		log.info(request.getAttribute("token").toString());
+		//		log.info(requzest.getAttribute("token").toString());
 		bindingResult(bindingResult);
 		customValidation(noteDTO);
 
@@ -217,6 +218,28 @@ public class NoteController {
 	//		return new ResponseEntity<ResponseToken>(response,HttpStatus.CREATED);
 	//	}
 
+	
+	@PostMapping("/imageupload/{noteId}")
+	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file,@PathVariable String noteId)
+	{
+		log.info("token-->"+token);
+//		log.info("file->"file);
+		log.info("noteId->"+noteId);
+		Response response = noteService.saveNoteImage(token,file,noteId);
+		
+		return null;
+	}
+//	@PostMapping("/imageupload/{id}")
+//	public ResponseEntity<Response> noteImageSave(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file,@PathVariable String id) throws NoteException 
+//	{	
+//		System.out.println("helo");
+//		noteServices.updateNoteImage(Long.valueOf(id), file);
+//		Response response = new Response();
+//		response.setStatusCode(166);
+//		response.setStatusMessage("Image Uploaded");
+//		return new ResponseEntity<Response>(response,HttpStatus.OK);
+//	}
+	
 	private void bindingResult(BindingResult bindingResult)
 	{
 		if(bindingResult.hasErrors())
