@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
+import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
@@ -27,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:message.properties")
 public class NoteServiceImp implements INoteService
 {
+
 	@Autowired
 	private INoteRepository noteRepository;
 
@@ -35,6 +39,9 @@ public class NoteServiceImp implements INoteService
 
 	@Autowired
 	private IUserRepository userRepository;
+	
+	@Autowired
+	private ILabelRepository labelRepository;
 
 	@Autowired
 	private UserToken userToken;
@@ -332,6 +339,33 @@ public class NoteServiceImp implements INoteService
 
 	}
 
+	
+	@Override
+	public List<Note> getlabeledNote(String token, String labelName) {
+	
+//		Optional<Long> labelId = labelRepository.findIdByLabelName(labelName);
+		Optional<Label> label = labelRepository.findBylabelName(labelName);
+		
+		long userId = userToken.tokenVerify(token);
+
+		if(label.get().getUser().getUserId()==userId)
+		{
+			List<Note> labeledNotesList = labelRepository.findById(label.get().getId()).get().getNotes().stream().collect(Collectors.toList());
+			return labeledNotesList;
+		}
+		return null;
+	}
+	
+	
+//	@Override
+//	public List<SendingNotes> listLabelNotes(String token,String label)throws NoteException {
+//		long labelId=labelRepository.findIdByLabelName(label).get();
+//			TokenVerify.tokenVerifing(token);						
+//		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
+//		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
+//		list.stream().forEach( x -> xyz.add(new SendingNotes(x,  new ArrayList<CollabUserDetails>())));
+//		return xyz;
+//}
 	//	Note note;
 
 	//	@Override

@@ -27,6 +27,8 @@ public interface INoteService {
 //	List<NoteLists> getAllNoteLists(String token, String isArchive, String isTrash);
 
 	List<Note> getAllNoteLists(String token, String isArchive, String isTrash);
+
+	List<Note> getlabeledNote(String token, String labelName);
 	
 
 //	public Response addNote(NoteDTO note , String token);

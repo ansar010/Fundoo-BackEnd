@@ -47,7 +47,8 @@ public class Label
 	private User user;
 
 	// Performing mapping to consist collection notes
-	@ManyToMany(cascade=CascadeType.ALL)
+//	@ManyToMany(cascade=CascadeType.REFRESH)
+	@ManyToMany
 	@JoinTable(
 			name="Note_Label",
 			joinColumns=@JoinColumn(name="label_id",referencedColumnName="ID"),

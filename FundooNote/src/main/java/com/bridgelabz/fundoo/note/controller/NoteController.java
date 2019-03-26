@@ -165,6 +165,25 @@ public class NoteController {
 	}
 	
 	
+	@GetMapping("/labeledNote")
+	public ResponseEntity<List<Note>> getLabeledNote(@RequestHeader("token") String token,@RequestParam String labelName)
+	{
+		log.info("token-->"+token);
+		log.info("labelName-->"+labelName);
+
+		List<Note> listOfNotes= noteService.getlabeledNote(token,labelName);
+
+		return new ResponseEntity<>(listOfNotes,HttpStatus.CREATED);
+	}
+	
+	
+//	@GetMapping("/labelnote")
+//	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestHeader String token,@RequestParam String label)throws NoteException
+//	{
+//		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
+//		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
+//		
+//}
 	//	@PutMapping
 	//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
 	//												@RequestHeader("token") String token,@RequestParam long noteId)
