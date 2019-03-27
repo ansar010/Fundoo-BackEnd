@@ -56,6 +56,8 @@ public class User implements Serializable
 	@NotEmpty(message="Please provide password")
 	@Column(name="password")
 	private String password;
+	
+	private String profileImage;
 
 //	//O to many using Unidirectional
 ////	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")

@@ -1,16 +1,26 @@
 package com.bridgelabz.fundoo.note.services;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
@@ -30,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:message.properties")
 public class NoteServiceImp implements INoteService
 {
-
 	@Autowired
 	private INoteRepository noteRepository;
 
@@ -39,7 +48,7 @@ public class NoteServiceImp implements INoteService
 
 	@Autowired
 	private IUserRepository userRepository;
-	
+
 	@Autowired
 	private ILabelRepository labelRepository;
 
@@ -48,6 +57,10 @@ public class NoteServiceImp implements INoteService
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+
+	//	private final Path rootLocation = Paths.get("/home/administrator/Desktop/upload-files");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 
@@ -76,73 +89,73 @@ public class NoteServiceImp implements INoteService
 		return response;
 	}
 
-		@Override
-		public Response updateNote(Note note, String token) 
-		{
-			log.info("user note->"+note.toString());
-			log.info("Token->"+token);
-	
-			long userId = userToken.tokenVerify(token);
-			log.info(Long.toString(userId));
-	
-			//User user = userRepository.findById(userId).orElse(th)
-			note.setUpdateStamp(LocalDateTime.now());
-	
-			Optional<Note> dbNote = noteRepository.findById(note.getId());
-	
-			long dbUserId = dbNote.get().getUser().getUserId();
-	
-			if(dbUserId==userId&&dbNote.isPresent())
-			{
-	
-				noteRepository.save(note);
-				Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
-						Integer.parseInt(environment.getProperty("status.success.code")));
-	
-				return response;
-			}
-			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
-					Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
-			return response;	
-		}
+	@Override
+	public Response updateNote(Note note, String token) 
+	{
+		log.info("user note->"+note.toString());
+		log.info("Token->"+token);
 
-//	@Override
-//	public Response updateNote(long noteId,NoteDTO noteDTO, String token) {
-//		log.info("note id->"+noteId);
-//		log.info("noteDto->"+noteDTO);
-//		log.info("token->"+token);
-//
-//		long userId = userToken.tokenVerify(token);
-//		//		Note note = modelMapper.map(noteDTO, Note.class);
-//
-//		Optional<Note> dbNote = noteRepository.findById(noteId);
-//		long dbUserId = dbNote.get().getUser().getUserId();
-//
-//		if(dbUserId==userId&&dbNote.isPresent())
-//		{
-//			//			note.setUpdateStamp(LocalDateTime.now());
-//			//			note.setId(noteId);
-//			//			Note status = noteRepository.save(note);
-//			dbNote.get().setUpdateStamp(LocalDateTime.now());
-//			dbNote.get().setTitle(noteDTO.getTitle());
-//			dbNote.get().setDescription(noteDTO.getDescription());
-//			dbNote.get().setColor(noteDTO.getColor());
-//			Note status = noteRepository.save(dbNote.get());
-//			if(status.equals(null))
-//			{
-//				Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
-//						Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
-//				return response;	
-//			}
-//			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
-//					Integer.parseInt(environment.getProperty("status.success.code")));
-//
-//			return response;
-//
-//		}
-//
-//		return null;
-//	}
+		long userId = userToken.tokenVerify(token);
+		log.info(Long.toString(userId));
+
+		//User user = userRepository.findById(userId).orElse(th)
+		note.setUpdateStamp(LocalDateTime.now());
+
+		Optional<Note> dbNote = noteRepository.findById(note.getId());
+
+		long dbUserId = dbNote.get().getUser().getUserId();
+
+		if(dbUserId==userId&&dbNote.isPresent())
+		{
+
+			noteRepository.save(note);
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
+					Integer.parseInt(environment.getProperty("status.success.code")));
+
+			return response;
+		}
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
+				Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
+		return response;	
+	}
+
+	//	@Override
+	//	public Response updateNote(long noteId,NoteDTO noteDTO, String token) {
+	//		log.info("note id->"+noteId);
+	//		log.info("noteDto->"+noteDTO);
+	//		log.info("token->"+token);
+	//
+	//		long userId = userToken.tokenVerify(token);
+	//		//		Note note = modelMapper.map(noteDTO, Note.class);
+	//
+	//		Optional<Note> dbNote = noteRepository.findById(noteId);
+	//		long dbUserId = dbNote.get().getUser().getUserId();
+	//
+	//		if(dbUserId==userId&&dbNote.isPresent())
+	//		{
+	//			//			note.setUpdateStamp(LocalDateTime.now());
+	//			//			note.setId(noteId);
+	//			//			Note status = noteRepository.save(note);
+	//			dbNote.get().setUpdateStamp(LocalDateTime.now());
+	//			dbNote.get().setTitle(noteDTO.getTitle());
+	//			dbNote.get().setDescription(noteDTO.getDescription());
+	//			dbNote.get().setColor(noteDTO.getColor());
+	//			Note status = noteRepository.save(dbNote.get());
+	//			if(status.equals(null))
+	//			{
+	//				Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdateError.errorMsg"),
+	//						Integer.parseInt(environment.getProperty("status.noteUpdateError.errorcode")));
+	//				return response;	
+	//			}
+	//			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
+	//					Integer.parseInt(environment.getProperty("status.success.code")));
+	//
+	//			return response;
+	//
+	//		}
+	//
+	//		return null;
+	//	}
 
 	@Override
 	public List<Note> getAllNoteLists(String token, String isArchive, String isTrash) {
@@ -247,7 +260,7 @@ public class NoteServiceImp implements INoteService
 			if(note.get().isPin()==true)
 			{
 				note.get().setPin(false);
-				
+
 				noteRepository.save(note.get());
 
 				Response response = StatusHelper.statusInfo(environment.getProperty("status.unpin.successMsg"),
@@ -339,13 +352,13 @@ public class NoteServiceImp implements INoteService
 
 	}
 
-	
+
 	@Override
 	public List<Note> getlabeledNote(String token, String labelName) {
-	
-//		Optional<Long> labelId = labelRepository.findIdByLabelName(labelName);
+
+		//		Optional<Long> labelId = labelRepository.findIdByLabelName(labelName);
 		Optional<Label> label = labelRepository.findBylabelName(labelName);
-		
+
 		long userId = userToken.tokenVerify(token);
 
 		if(label.get().getUser().getUserId()==userId)
@@ -355,17 +368,80 @@ public class NoteServiceImp implements INoteService
 		}
 		return null;
 	}
-	
-	
-//	@Override
-//	public List<SendingNotes> listLabelNotes(String token,String label)throws NoteException {
-//		long labelId=labelRepository.findIdByLabelName(label).get();
-//			TokenVerify.tokenVerifing(token);						
-//		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
-//		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
-//		list.stream().forEach( x -> xyz.add(new SendingNotes(x,  new ArrayList<CollabUserDetails>())));
-//		return xyz;
-//}
+
+	//method to store file 
+	@Override
+	public Response saveNoteImage(String token, MultipartFile file, Long noteId) {
+
+		Note note = noteRepository.findById(noteId).get();
+
+		long userId = userToken.tokenVerify(token);
+
+		// generate random universal unique id 
+		UUID uuid = UUID.randomUUID();
+
+		String uniqueStringId = uuid.toString();
+
+		//copying file stream in target file
+		try {
+			Files.copy(file.getInputStream(), fileLocation.resolve(uniqueStringId),StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(note.getUser().getUserId()==userId)
+		{
+			note.setImage(uniqueStringId);
+			noteRepository.save(note);
+
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.imageUpload.successMsg"),
+					Integer.parseInt(environment.getProperty("status.success.code")));
+
+			return response;
+
+		}
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.imageUpload.errorMsg"),
+				Integer.parseInt(environment.getProperty("status.error.code")));
+
+		return response;
+
+	}	
+
+
+
+	@Override
+	public Resource getNoteImage(Long noteId) {
+
+		Note note = noteRepository.findById(noteId).get();
+
+		//validating user 
+//		if(note.getUser().getUserId()==userId)
+//		{
+			// get image name from database
+			Path imagePath = fileLocation.resolve(note.getImage());
+
+			try {
+				//creating url resource based on uri object
+				Resource resource = new UrlResource(imagePath.toUri());
+				if(resource.exists() || resource.isReadable())
+				{
+					return resource;
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+//		}
+		return null;
+	}
+
+	//	@Override
+	//	public List<SendingNotes> listLabelNotes(String token,String label)throws NoteException {
+	//		long labelId=labelRepository.findIdByLabelName(label).get();
+	//			TokenVerify.tokenVerifing(token);						
+	//		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
+	//		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
+	//		list.stream().forEach( x -> xyz.add(new SendingNotes(x,  new ArrayList<CollabUserDetails>())));
+	//		return xyz;
+	//}
 	//	Note note;
 
 	//	@Override

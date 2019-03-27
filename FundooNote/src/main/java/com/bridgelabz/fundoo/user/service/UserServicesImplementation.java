@@ -1,7 +1,14 @@
 package com.bridgelabz.fundoo.user.service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,19 +16,24 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.exception.UserException;
+import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.model.User;
+import com.bridgelabz.fundoo.util.MailHelper;
 import com.bridgelabz.fundoo.util.StatusHelper;
 import com.bridgelabz.fundoo.util.UserToken;
-import com.bridgelabz.fundoo.util.MailHelper;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,6 +60,7 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	ModelMapper modelMapper;
 
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
 
 	@Override
@@ -86,6 +99,7 @@ public class UserServicesImplementation implements IUserServices
 		return response;
 	}
 
+	
 	@Override
 	public ResponseToken userLogin(LoginDTO loginDTO)
 	{
@@ -201,4 +215,56 @@ public class UserServicesImplementation implements IUserServices
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.resetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
 	}
+	
+	@Override
+	public Response saveNoteImage(String token, MultipartFile file) {
+		long userId = userToken.tokenVerify(token);
+		User user = userRepository.findById(userId).get();
+		UUID uuid = UUID.randomUUID();
+		String uniqueId = uuid.toString();
+		
+		try {
+			Files.copy(file.getInputStream(), fileLocation.resolve(uniqueId), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+			user.setProfileImage(uniqueId);
+			userRepository.save(user);
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.imageUpload.successMsg"),
+					Integer.parseInt(environment.getProperty("status.success.code")));
+
+			return response;
+	}
+
+
+	@Override
+	public Resource getImage(String token) {
+		
+//		Note note = noteRepository.findById(noteId).get();
+		long userId = userToken.tokenVerify(token);
+		User user = userRepository.findById(userId).get();
+		
+		//validating user 
+//		if(note.getUser().getUserId()==userId)
+//		{
+			// get image name from database
+			Path imagePath = fileLocation.resolve(user.getProfileImage());
+
+			try {
+				//creating url resource based on uri object
+				Resource resource = new UrlResource(imagePath.toUri());
+				if(resource.exists() || resource.isReadable())
+				{
+					return resource;
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+//		}
+		return null;
+	}
+	
+
 }

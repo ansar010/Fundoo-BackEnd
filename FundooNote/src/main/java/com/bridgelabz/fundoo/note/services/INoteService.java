@@ -2,6 +2,7 @@ package com.bridgelabz.fundoo.note.services;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
@@ -31,6 +32,11 @@ public interface INoteService {
 	List<Note> getAllNoteLists(String token, String isArchive, String isTrash);
 
 	List<Note> getlabeledNote(String token, String labelName);
+
+	Response saveNoteImage(String token, MultipartFile file, Long noteId);
+
+	Resource getNoteImage(Long noteId);
+
 
 //	saveNoteImage(String token, MultipartFile file, String noteId);
 	

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -220,24 +221,29 @@ public class NoteController {
 
 	
 	@PostMapping("/imageupload/{noteId}")
-	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file,@PathVariable String noteId)
+	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token, @RequestParam("file") MultipartFile file,@PathVariable String noteId)
 	{
 		log.info("token-->"+token);
-//		log.info("file->"file);
+		//log.info("file->"file);
 		log.info("noteId->"+noteId);
-		Response response = noteService.saveNoteImage(token,file,noteId);
+		Response response = noteService.saveNoteImage(token,file,Long.valueOf(noteId));
 		
-		return null;
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
-//	@PostMapping("/imageupload/{id}")
-//	public ResponseEntity<Response> noteImageSave(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file,@PathVariable String id) throws NoteException 
-//	{	
-//		System.out.println("helo");
-//		noteServices.updateNoteImage(Long.valueOf(id), file);
-//		Response response = new Response();
-//		response.setStatusCode(166);
-//		response.setStatusMessage("Image Uploaded");
-//		return new ResponseEntity<Response>(response,HttpStatus.OK);
+	
+	@GetMapping("/getnoteimage/{noteId}")
+	public ResponseEntity<Resource> getNoteImage(@PathVariable String noteId)
+	{
+		//log.info("file->"file);
+		log.info("noteId->"+noteId);
+		Resource resource = noteService.getNoteImage(Long.valueOf(noteId));
+//		return resource;
+		return new ResponseEntity<>(resource,HttpStatus.OK);
+	}
+//	@GetMapping("/imageget/{id}")
+//	public Resource getProfilePic(@PathVariable long id) throws NoteException
+//	{
+//		return noteServices.getNoteImage(Long.valueOf(id));	
 //	}
 	
 	private void bindingResult(BindingResult bindingResult)

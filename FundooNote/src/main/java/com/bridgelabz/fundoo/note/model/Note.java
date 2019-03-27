@@ -55,6 +55,9 @@ public class Note
 	private boolean isTrash;
 	
 	private String color;
+	
+	@Column(columnDefinition="varchar(500)")
+	private String image;
 
 //	@ManyToOne
 //	@JoinColumn(name="user_id",referencedColumnName="userId")
