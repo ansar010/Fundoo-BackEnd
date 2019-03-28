@@ -80,7 +80,7 @@ public class UserController
 		return new ResponseEntity<ResponseToken>(userLoginResponse, HttpStatus.OK);
 	}
 
-
+//
 	@RequestMapping("/useractivation/{token}")
 	public ResponseEntity<String> userVerification(@PathVariable String token)
 	{
