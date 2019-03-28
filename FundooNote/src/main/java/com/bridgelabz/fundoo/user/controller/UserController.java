@@ -32,6 +32,7 @@ import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
+import com.bridgelabz.fundoo.user.dto.UserInfo;
 import com.bridgelabz.fundoo.user.service.IUserServices;
 
 
@@ -116,19 +117,35 @@ public class UserController
 	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token, @RequestParam("file") MultipartFile file)
 	{
 		
-		Response response = userServices.saveNoteImage(token,file);
+		Response response = userServices.saveProfileImage(token,file);
 		
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 	
-	@GetMapping("/getnoteimage/{token}")
-	public ResponseEntity<Resource> getNoteImage(@PathVariable String token)
+	@GetMapping("/getimage/{token}")
+	public ResponseEntity<Resource> getProfilePic(@PathVariable String token)
 	{
 		
 		Resource resource = userServices.getImage(token);
 //		return resource;
 		return new ResponseEntity<>(resource,HttpStatus.OK);
 	}
+	
+	@GetMapping("/userdetails")
+	public ResponseEntity<UserInfo> getuserInfo(@RequestHeader String token)
+	{
+		
+		UserInfo userInfo = userServices.getUserInfo(token);
+//		return resource;
+		return new ResponseEntity<>(userInfo,HttpStatus.OK);
+	}
+//	@GetMapping("/getUserDetails")
+//	public ResponseEntity<UserInfo> getUserInfo(@RequestHeader String token)throws UserException
+//	{
+//		return new ResponseEntity<UserInfo>(userServices.getUserInfo(token),HttpStatus.OK);
+//		}
+	
+	
 //	@PostMapping(value = "/imageupload")
 //	public ResponseEntity<Response> profileImageSave(@RequestHeader("token") String token,
 //			@RequestParam("file") MultipartFile file) throws UserException // @RequestHeader("token") String token,

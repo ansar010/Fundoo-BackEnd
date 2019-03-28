@@ -9,6 +9,7 @@ import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
+import com.bridgelabz.fundoo.user.dto.UserInfo;
 
 public interface IUserServices
 {
@@ -17,7 +18,8 @@ public interface IUserServices
 	public boolean verifyToken(String token);
 	public Response forgetPassword(String email) ;
 	public Response resetPassword(String token,String password) ;
-	public Response saveNoteImage(String token, MultipartFile file);
+	public Response saveProfileImage(String token, MultipartFile file);
 	public Resource getImage(String token);
+	public UserInfo getUserInfo(String token);
 }
 

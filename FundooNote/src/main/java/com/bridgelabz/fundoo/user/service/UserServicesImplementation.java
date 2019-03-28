@@ -29,6 +29,7 @@ import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
+import com.bridgelabz.fundoo.user.dto.UserInfo;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.util.MailHelper;
 import com.bridgelabz.fundoo.util.StatusHelper;
@@ -60,8 +61,9 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	ModelMapper modelMapper;
 
-	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
+	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response addUser(UserDTO userDTO,HttpServletRequest request)
@@ -217,7 +219,7 @@ public class UserServicesImplementation implements IUserServices
 	}
 	
 	@Override
-	public Response saveNoteImage(String token, MultipartFile file) {
+	public Response saveProfileImage(String token, MultipartFile file) {
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
 		UUID uuid = UUID.randomUUID();
@@ -266,5 +268,12 @@ public class UserServicesImplementation implements IUserServices
 		return null;
 	}
 	
-
+	@Override
+	public UserInfo getUserInfo(String token) {
+		long userId = userToken.tokenVerify(token);
+		User user = userRepository.findById(userId).get();
+		UserInfo userInfo = modelMapper.map(user, UserInfo.class);
+		
+		return userInfo;
+	}
 }

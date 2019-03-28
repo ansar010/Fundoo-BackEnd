@@ -58,9 +58,8 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private ModelMapper modelMapper;
 
-	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
-
-	//	private final Path rootLocation = Paths.get("/home/administrator/Desktop/upload-files");
+//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 
