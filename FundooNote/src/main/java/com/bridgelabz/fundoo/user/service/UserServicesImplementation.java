@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.exception.UserException;
-import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
@@ -61,9 +60,9 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	ModelMapper modelMapper;
 
-//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
-	private final Path fileLocation = Paths.get("G:\\FundooFile");
+//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response addUser(UserDTO userDTO,HttpServletRequest request)
