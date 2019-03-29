@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -355,14 +356,16 @@ public class NoteServiceImp implements INoteService
 	@Override
 	public List<Note> getlabeledNote(String token, String labelName) {
 
-		//		Optional<Long> labelId = labelRepository.findIdByLabelName(labelName);
+		//	Optional<Long> labelId = labelRepository.findIdByLabelName(labelName);
 		Optional<Label> label = labelRepository.findBylabelName(labelName);
 
 		long userId = userToken.tokenVerify(token);
 
 		if(label.get().getUser().getUserId()==userId)
 		{
-			List<Note> labeledNotesList = labelRepository.findById(label.get().getId()).get().getNotes().stream().collect(Collectors.toList());
+		//	List<Note> labeledNotesList = labelRepository.findById(label.get().getId()).get().getNotes().stream().collect(Collectors.toList());
+			
+			List<Note> labeledNotesList = label.get().getNotes().stream().collect(Collectors.toList());
 			return labeledNotesList;
 		}
 		return null;

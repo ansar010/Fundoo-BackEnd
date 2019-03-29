@@ -1,8 +1,5 @@
 package com.bridgelabz.fundoo.user.controller;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 

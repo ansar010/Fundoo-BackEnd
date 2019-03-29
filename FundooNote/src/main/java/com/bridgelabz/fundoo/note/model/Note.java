@@ -58,7 +58,8 @@ public class Note
 	
 	@Column(columnDefinition="varchar(500)")
 	private String image;
-
+	
+	
 //	@ManyToOne
 //	@JoinColumn(name="user_id",referencedColumnName="userId")
 //    private User userId;
