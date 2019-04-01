@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -18,11 +19,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @Table(name="note_details")
+@ToString
 public class Note 
 {
 	@Id
@@ -41,6 +44,14 @@ public class Note
 	private LocalDateTime updateStamp;
 	
 	private LocalDateTime deleteStamp;
+	
+	
+	private Timestamp remainder;
+	
+	
+//	private String remainder;
+
+
 	
 	@JsonProperty
 	@Column(columnDefinition="tinyint(1) default 0 not null")
