@@ -60,9 +60,9 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	ModelMapper modelMapper;
 
-//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
-	private final Path fileLocation = Paths.get("G:\\FundooFile");
+//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response addUser(UserDTO userDTO,HttpServletRequest request)

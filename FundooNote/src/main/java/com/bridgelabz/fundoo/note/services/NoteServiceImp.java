@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -59,8 +58,8 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private ModelMapper modelMapper;
 
-//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
-	private final Path fileLocation = Paths.get("G:\\FundooFile");
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 
@@ -179,13 +178,24 @@ public class NoteServiceImp implements INoteService
 		log.info("Token->"+token);
 
 		long userId = userToken.tokenVerify(token);
+		
 		log.info(Long.toString(userId));
 
 		Optional<Note> note = noteRepository.findById(noteId);
+		
+		log.info(String.valueOf(note.isPresent()));
+		System.out.println("cehck sds"+note.isPresent());
+		
 		long dbuserId = note.get().getUser().getUserId();
+		log.info("user id->"+dbuserId);
+		boolean trash = note.get().isTrash();
+		log.info("Trash->"+trash);
 
 		if(note.isPresent()&&dbuserId==userId&&note.get().isTrash()==true)
 		{
+			log.info("user validation done");
+//			note.get().getLabels().stream().filter(label->label.getNotes().remove(note.get()));
+			note.get().getLabels().forEach(label->label.getNotes().remove(note.get()));
 			noteRepository.delete(note.get());
 
 			Response response = StatusHelper.statusInfo(environment.getProperty("status.deleteForever.successMsg"),

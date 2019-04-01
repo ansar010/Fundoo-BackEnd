@@ -16,12 +16,12 @@ import com.bridgelabz.fundoo.util.StatusHelper;
 @RestControllerAdvice
 public class FundooExceptionHandler {
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<Response> GlobalExceptionHandler(Exception e)
-	{
-		Response statusInfo = StatusHelper.statusInfo("Internal Error", -200);
-		return new ResponseEntity<>(statusInfo,HttpStatus.OK);	
-	}
+//	@ExceptionHandler(Exception.class)
+//	public ResponseEntity<Response> GlobalExceptionHandler(Exception e)
+//	{
+//		Response statusInfo = StatusHelper.statusInfo("Internal Error", -200);
+//		return new ResponseEntity<>(statusInfo,HttpStatus.OK);	
+//	}
 
 	@ExceptionHandler(NoteException.class)
 	public ResponseEntity<Response> NoteExceptionHandler(NoteException e)

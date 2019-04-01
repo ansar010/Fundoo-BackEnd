@@ -49,10 +49,6 @@ public class Note
 	private Timestamp remainder;
 	
 	
-//	private String remainder;
-
-
-	
 	@JsonProperty
 	@Column(columnDefinition="tinyint(1) default 0 not null")
 	private boolean isArchive;
