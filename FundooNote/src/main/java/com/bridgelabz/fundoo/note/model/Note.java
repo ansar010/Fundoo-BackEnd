@@ -10,11 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.bridgelabz.fundoo.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -73,6 +75,14 @@ public class Note
 	@ManyToOne
 	@JoinColumn(name="userId")
 	private User user;
+	
+	@ManyToMany
+	@JoinTable(
+		name="collabNote_Details",
+		joinColumns=@JoinColumn(name="collabednote_id",referencedColumnName="ID"),
+		inverseJoinColumns=@JoinColumn(name="collabeduser_id",referencedColumnName="userId"))
+	@JsonIgnore
+	private Set<User> collabedUsers;
 	
 	
 	// Performing mapping to consist collection of  labels

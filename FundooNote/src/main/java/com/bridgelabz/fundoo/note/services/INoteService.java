@@ -1,6 +1,7 @@
 package com.bridgelabz.fundoo.note.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.user.model.User;
 
 public interface INoteService {
 
@@ -36,6 +38,13 @@ public interface INoteService {
 	Response saveNoteImage(String token, MultipartFile file, Long noteId);
 
 	Resource getNoteImage(Long noteId);
+
+	Response addCollab(long noteId, String userMailId, String token);
+
+	Response removeCollab(long noteId, String userMailId, String token);
+
+	Set<User> getCollabedUser(long noteId, String token);
+
 
 
 //	saveNoteImage(String token, MultipartFile file, String noteId);

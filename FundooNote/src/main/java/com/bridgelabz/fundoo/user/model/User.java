@@ -2,16 +2,20 @@ package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+
+import com.bridgelabz.fundoo.note.model.Note;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -58,6 +62,9 @@ public class User implements Serializable
 	private String password;
 	
 	private String profileImage;
+	
+	@ManyToMany(mappedBy="collabedUsers")
+	private Set<Note> collabedNotes;
 
 //	//O to many using Unidirectional
 ////	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")

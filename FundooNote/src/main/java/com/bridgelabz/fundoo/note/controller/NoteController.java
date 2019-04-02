@@ -1,6 +1,7 @@
 package com.bridgelabz.fundoo.note.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -27,6 +28,7 @@ import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.services.INoteService;
 import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.user.model.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -165,8 +167,8 @@ public class NoteController {
 
 		return new ResponseEntity<>(listOfNotes,HttpStatus.CREATED);
 	}
-	
-	
+
+
 	@GetMapping("/labeledNote")
 	public ResponseEntity<List<Note>> getLabeledNote(@RequestHeader("token") String token,@RequestParam String labelName)
 	{
@@ -177,15 +179,15 @@ public class NoteController {
 
 		return new ResponseEntity<>(listOfNotes,HttpStatus.CREATED);
 	}
-	
-	
-//	@GetMapping("/labelnote")
-//	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestHeader String token,@RequestParam String label)throws NoteException
-//	{
-//		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
-//		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
-//		
-//}
+
+
+	//	@GetMapping("/labelnote")
+	//	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestHeader String token,@RequestParam String label)throws NoteException
+	//	{
+	//		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
+	//		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
+	//		
+	//}
 	//	@PutMapping
 	//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
 	//												@RequestHeader("token") String token,@RequestParam long noteId)
@@ -219,7 +221,7 @@ public class NoteController {
 	//		return new ResponseEntity<ResponseToken>(response,HttpStatus.CREATED);
 	//	}
 
-	
+
 	@PostMapping("/imageupload/{noteId}")
 	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token, @RequestParam("file") MultipartFile file,@PathVariable String noteId)
 	{
@@ -227,24 +229,52 @@ public class NoteController {
 		//log.info("file->"file);
 		log.info("noteId->"+noteId);
 		Response response = noteService.saveNoteImage(token,file,Long.valueOf(noteId));
-		
+
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getnoteimage/{noteId}")
 	public ResponseEntity<Resource> getNoteImage(@PathVariable String noteId)
 	{
 		//log.info("file->"file);
 		log.info("noteId->"+noteId);
 		Resource resource = noteService.getNoteImage(Long.valueOf(noteId));
-//		return resource;
+		//		return resource;
 		return new ResponseEntity<>(resource,HttpStatus.OK);
 	}
-//	@GetMapping("/imageget/{id}")
-//	public Resource getProfilePic(@PathVariable long id) throws NoteException
-//	{
-//		return noteServices.getNoteImage(Long.valueOf(id));	
-//	}
+
+	@PostMapping("/addcollaborator")
+	public ResponseEntity<Response> addCollaborator(@RequestParam long noteId,@RequestParam String userMailId, @RequestHeader String token)
+	{
+		log.info("collab API noteId->"+noteId);
+		log.info("collab userMailId->"+userMailId);
+		log.info("collab API token->"+token);
+
+		Response response=noteService.addCollab(noteId,userMailId,token);
+		return new ResponseEntity<>(response,HttpStatus.OK);
+	}
+
+	@PostMapping("/removecollaborator")
+	public ResponseEntity<Response> removeCollaborator(@RequestParam long noteId,@RequestParam String userMailId, @RequestHeader String token)
+	{
+		log.info("collab API noteId->"+noteId);
+		log.info("collab userMailId->"+userMailId);
+		log.info("collab API token->"+token);
+
+		Response response=noteService.removeCollab(noteId,userMailId,token);
+		return new ResponseEntity<>(response,HttpStatus.OK);
+	}
+
+	@GetMapping("/getcollaboratoruser")
+	public ResponseEntity<Set<User>> getCollaboratorUser(@RequestParam long noteId, @RequestHeader String token)
+	{
+		log.info("collab API noteId->"+noteId);
+		log.info("collab API token->"+token);
+
+		Set<User> setOfUser=noteService.getCollabedUser(noteId, token);
+		return new ResponseEntity<>(setOfUser,HttpStatus.OK);
+	}
+	
 	
 	private void bindingResult(BindingResult bindingResult)
 	{

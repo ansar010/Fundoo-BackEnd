@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.bridgelabz.fundoo.exception.CollaboratorException;
 import com.bridgelabz.fundoo.exception.EmailException;
 import com.bridgelabz.fundoo.exception.LabelException;
 import com.bridgelabz.fundoo.exception.NoteException;
@@ -29,7 +30,14 @@ public class FundooExceptionHandler {
 		Response response = StatusHelper.statusInfo(e.getMessage(), e.getErrorCode());
 		return new ResponseEntity<>(response,HttpStatus.OK);	
 	}
-
+	
+	@ExceptionHandler(CollaboratorException.class)
+	public ResponseEntity<Response> CollaboratorExceptionHandler(CollaboratorException e)
+	{
+		Response response = StatusHelper.statusInfo(e.getMessage(), e.getErrorCode());
+		return new ResponseEntity<>(response,HttpStatus.OK);	
+	}
+	
 	@ExceptionHandler(LabelException.class)
 	public ResponseEntity<Response> LabelExceptionHandler(LabelException e)
 	{

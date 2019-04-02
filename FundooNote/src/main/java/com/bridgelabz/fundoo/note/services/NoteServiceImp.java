@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bridgelabz.fundoo.exception.CollaboratorException;
 import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
@@ -59,7 +61,7 @@ public class NoteServiceImp implements INoteService
 	private ModelMapper modelMapper;
 
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
-//	private final Path fileLocation = Paths.get("G:\\FundooFile");
+	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 
@@ -164,9 +166,14 @@ public class NoteServiceImp implements INoteService
 		log.info("isTrash->"+isTrash);
 
 		long userId = userToken.tokenVerify(token);
-
+		
+		Optional<User> dbUser = userRepository.findById(userId);
+		Set<Note> collabedNotes = dbUser.get().getCollabedNotes();
+		
 		Optional<List<Note>> list_of_notes = noteRepository.findAllById(userId, Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
-
+		
+		list_of_notes.get().addAll(collabedNotes);
+		
 		return list_of_notes.get();
 	}
 
@@ -178,14 +185,14 @@ public class NoteServiceImp implements INoteService
 		log.info("Token->"+token);
 
 		long userId = userToken.tokenVerify(token);
-		
+
 		log.info(Long.toString(userId));
 
 		Optional<Note> note = noteRepository.findById(noteId);
-		
+
 		log.info(String.valueOf(note.isPresent()));
 		System.out.println("cehck sds"+note.isPresent());
-		
+
 		long dbuserId = note.get().getUser().getUserId();
 		log.info("user id->"+dbuserId);
 		boolean trash = note.get().isTrash();
@@ -194,7 +201,7 @@ public class NoteServiceImp implements INoteService
 		if(note.isPresent()&&dbuserId==userId&&note.get().isTrash()==true)
 		{
 			log.info("user validation done");
-//			note.get().getLabels().stream().filter(label->label.getNotes().remove(note.get()));
+			//			note.get().getLabels().stream().filter(label->label.getNotes().remove(note.get()));
 			note.get().getLabels().forEach(label->label.getNotes().remove(note.get()));
 			noteRepository.delete(note.get());
 
@@ -373,8 +380,8 @@ public class NoteServiceImp implements INoteService
 
 		if(label.get().getUser().getUserId()==userId)
 		{
-		//	List<Note> labeledNotesList = labelRepository.findById(label.get().getId()).get().getNotes().stream().collect(Collectors.toList());
-			
+			//	List<Note> labeledNotesList = labelRepository.findById(label.get().getId()).get().getNotes().stream().collect(Collectors.toList());
+
 			List<Note> labeledNotesList = label.get().getNotes().stream().collect(Collectors.toList());
 			return labeledNotesList;
 		}
@@ -425,25 +432,127 @@ public class NoteServiceImp implements INoteService
 
 		Note note = noteRepository.findById(noteId).get();
 
-		//validating user 
-//		if(note.getUser().getUserId()==userId)
-//		{
-			// get image name from database
-			Path imagePath = fileLocation.resolve(note.getImage());
+		// get image name from database
+		Path imagePath = fileLocation.resolve(note.getImage());
 
-			try {
-				//creating url resource based on uri object
-				Resource resource = new UrlResource(imagePath.toUri());
-				if(resource.exists() || resource.isReadable())
-				{
-					return resource;
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+		try {
+			//creating url resource based on uri object
+			Resource resource = new UrlResource(imagePath.toUri());
+			if(resource.exists() || resource.isReadable())
+			{
+				return resource;
 			}
-//		}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
+
+	@Override
+	public Response addCollab(long noteId, String userMailId, String token) 
+	{
+		log.info("collab Service noteId->"+noteId);
+		log.info("collab Service userMailId->"+userMailId);
+		log.info("collab Service token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+
+		Optional<User> collabUserDetails = userRepository.findByEmail(userMailId);
+
+		Optional<Note> collabNoteDetails = noteRepository.findById(noteId);
+		
+		Optional<User> OwnerUser = userRepository.findById(userId);
+		
+		boolean ownerValidation = OwnerUser.get().getEmail().equals(userMailId);
+		
+		// validating user already added  
+		List<User> checkUserPresence = collabNoteDetails.get().getCollabedUsers().stream().filter(user->user.getEmail().equals(userMailId)).collect(Collectors.toList());
+
+		
+		
+		if(checkUserPresence.isEmpty()&&!ownerValidation&&collabNoteDetails.get().getUser().getUserId()==userId)
+		{
+			collabNoteDetails.get().getCollabedUsers().add(collabUserDetails.get());
+			collabUserDetails.get().getCollabedNotes().add(collabNoteDetails.get());
+			noteRepository.save(collabNoteDetails.get());
+			userRepository.save(collabUserDetails.get());
+
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.addCollab.successMsg"),
+					Integer.parseInt(environment.getProperty("status.success.code")));
+
+			return response;
+
+		}else{
+			throw new CollaboratorException(environment.getProperty("status.addCollab.errorMsg"), Integer.parseInt(environment.getProperty("status.error.code")));
+		}
+	}
+
+	@Override
+	public Response removeCollab(long noteId, String userMailId, String token) 
+	{
+		log.info("collab Service noteId->"+noteId);
+		log.info("collab Service userMailId->"+userMailId);
+		log.info("collab Service token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+
+		Optional<User> collabUserDetails = userRepository.findByEmail(userMailId);
+
+		Optional<Note> collabNoteDetails = noteRepository.findById(noteId);
+
+		List<User> checkUserPresence = collabNoteDetails.get().getCollabedUsers().stream().filter(user->user.getEmail().equals(userMailId)).collect(Collectors.toList());
+
+		if(!checkUserPresence.isEmpty()&&collabNoteDetails.get().getUser().getUserId()==userId)
+		{
+			collabNoteDetails.get().getCollabedUsers().remove(collabUserDetails.get());
+			collabUserDetails.get().getCollabedNotes().remove(collabNoteDetails.get());
+			noteRepository.save(collabNoteDetails.get());
+			userRepository.save(collabUserDetails.get());
+
+			Response response = StatusHelper.statusInfo(environment.getProperty("status.removeCollab.successMsg"),
+					Integer.parseInt(environment.getProperty("status.success.code")));
+
+			return response;
+
+		}else{
+			throw new CollaboratorException(environment.getProperty("status.removeCollab.errorMsg"), Integer.parseInt(environment.getProperty("status.error.code")));
+		}	
+	}
+
+	@Override
+	public Set<User> getCollabedUser(long noteId, String token) 
+	{
+		log.info("collab Service noteId->"+noteId);
+		log.info("collab Service token->"+token);
+
+		long userId = userToken.tokenVerify(token);
+		Optional<Note> note = noteRepository.findById(noteId);
+		Optional<User> ownerUser = userRepository.findById(userId);
+
+		if(note.get().getUser().getUserId()==userId)
+		{
+			Set<User> collabedUsers = note.get().getCollabedUsers();
+			collabedUsers.add(ownerUser.get());
+			return collabedUsers;
+		}
+		return null;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	//	@Override
 	//	public List<SendingNotes> listLabelNotes(String token,String label)throws NoteException {
