@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 public class UserInfo {
-	
+	private long userId;
 	private String email;
 	private String name;
 

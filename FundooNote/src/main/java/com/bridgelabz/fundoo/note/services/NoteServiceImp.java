@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.exception.CollaboratorException;
 import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
+import com.bridgelabz.fundoo.note.dto.CollabUserInfo;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
@@ -520,20 +521,24 @@ public class NoteServiceImp implements INoteService
 	}
 
 	@Override
-	public Set<User> getCollabedUser(long noteId, String token) 
+//	public Set<User> getCollabedUser(long noteId, String token) 
+	public Set<CollabUserInfo> getCollabedUser(long noteId, String token) 
 	{
 		log.info("collab Service noteId->"+noteId);
 		log.info("collab Service token->"+token);
 
 		long userId = userToken.tokenVerify(token);
 		Optional<Note> note = noteRepository.findById(noteId);
-		Optional<User> ownerUser = userRepository.findById(userId);
+//		Optional<User> ownerUser = userRepository.findById(userId);
 
 		if(note.get().getUser().getUserId()==userId)
 		{
-			Set<User> collabedUsers = note.get().getCollabedUsers();
-			collabedUsers.add(ownerUser.get());
-			return collabedUsers;
+//			Set<User> collabedUsers = note.get().getCollabedUsers();
+//			collabedUsers.add(ownerUser.get());
+			Set<CollabUserInfo> collabUserInfos=note.get().getCollabedUsers().stream().map(user->modelMapper.map(user, CollabUserInfo.class)).collect(Collectors.toSet());
+//			CollabUserInfo collabUserInfo = modelMapper.map(collabedUsers, CollabUserInfo.class);
+//			
+			return collabUserInfos;
 		}
 		return null;
 	}

@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.exception.NoteException;
+import com.bridgelabz.fundoo.note.dto.CollabUserInfo;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.services.INoteService;
 import com.bridgelabz.fundoo.response.Response;
-import com.bridgelabz.fundoo.user.model.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -266,12 +266,16 @@ public class NoteController {
 	}
 
 	@GetMapping("/getcollaboratoruser")
-	public ResponseEntity<Set<User>> getCollaboratorUser(@RequestParam long noteId, @RequestHeader String token)
+//	public ResponseEntity<Set<User>> getCollaboratorUser(@RequestParam long noteId, @RequestHeader String token)
+	public ResponseEntity<Set<CollabUserInfo>> getCollaboratorUser(@RequestParam long noteId, @RequestHeader String token)
+
 	{
 		log.info("collab API noteId->"+noteId);
 		log.info("collab API token->"+token);
 
-		Set<User> setOfUser=noteService.getCollabedUser(noteId, token);
+//		Set<User> setOfUser=noteService.getCollabedUser(noteId, token);
+		Set<CollabUserInfo> setOfUser=noteService.getCollabedUser(noteId, token);
+
 		return new ResponseEntity<>(setOfUser,HttpStatus.OK);
 	}
 	

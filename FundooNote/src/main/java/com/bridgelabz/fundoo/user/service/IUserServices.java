@@ -21,5 +21,7 @@ public interface IUserServices
 	public Response saveProfileImage(String token, MultipartFile file);
 	public Resource getImage(String token);
 	public UserInfo getUserInfo(String token);
+	public Resource getCollabUserImage(long userId);
+	
 }
 

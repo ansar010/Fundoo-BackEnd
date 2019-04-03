@@ -128,6 +128,15 @@ public class UserController
 		return new ResponseEntity<>(resource,HttpStatus.OK);
 	}
 	
+	@GetMapping("/getcollabuserimage/{userId}")
+	public ResponseEntity<Resource> getCollabUserProfilePic(@PathVariable long userId)
+	{
+		
+		Resource resource = userServices.getCollabUserImage(userId);
+//		return resource;
+		return new ResponseEntity<>(resource,HttpStatus.OK);
+	}
+	
 	@GetMapping("/userdetails")
 	public ResponseEntity<UserInfo> getuserInfo(@RequestHeader String token)
 	{

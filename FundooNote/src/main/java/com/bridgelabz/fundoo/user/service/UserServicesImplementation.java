@@ -268,6 +268,27 @@ public class UserServicesImplementation implements IUserServices
 	}
 	
 	@Override
+	public Resource getCollabUserImage(long userId) {
+		
+		User user = userRepository.findById(userId).get();
+		
+			Path imagePath = fileLocation.resolve(user.getProfileImage());
+
+			try {
+				//creating url resource based on uri object
+				Resource resource = new UrlResource(imagePath.toUri());
+				if(resource.exists() || resource.isReadable())
+				{
+					return resource;
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		return null;	
+	}
+
+
+	@Override
 	public UserInfo getUserInfo(String token) {
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
