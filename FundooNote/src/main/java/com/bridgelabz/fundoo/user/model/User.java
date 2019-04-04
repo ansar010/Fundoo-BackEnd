@@ -16,6 +16,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import com.bridgelabz.fundoo.note.model.Note;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +65,7 @@ public class User implements Serializable
 	private String profileImage;
 	
 	@ManyToMany(mappedBy="collabedUsers")
+	@JsonIgnore
 	private Set<Note> collabedNotes;
 
 //	//O to many using Unidirectional

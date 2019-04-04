@@ -169,13 +169,15 @@ public class NoteServiceImp implements INoteService
 		long userId = userToken.tokenVerify(token);
 		
 		Optional<User> dbUser = userRepository.findById(userId);
-		Set<Note> collabedNotes = dbUser.get().getCollabedNotes();
+		List<Note> collabedNotes = dbUser.get().getCollabedNotes().stream().collect(Collectors.toList());
 		
 		Optional<List<Note>> list_of_notes = noteRepository.findAllById(userId, Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
 		
-		list_of_notes.get().addAll(collabedNotes);
-		
-		return list_of_notes.get();
+//		list_of_notes.get().addAll(collabedNotes);
+		collabedNotes.addAll(list_of_notes.get());
+//		return list_of_notes.get();
+	
+		return collabedNotes;
 	}
 
 
@@ -458,25 +460,29 @@ public class NoteServiceImp implements INoteService
 
 		long userId = userToken.tokenVerify(token);
 
-		Optional<User> collabUserDetails = userRepository.findByEmail(userMailId);
+		User collabUserDetails = userRepository.findByEmail(userMailId).orElseThrow(
+				()->new CollaboratorException(environment.getProperty("status.invalidAc.errorMsg"), 
+								Integer.parseInt(environment.getProperty("status.error.code"))));
 
 		Optional<Note> collabNoteDetails = noteRepository.findById(noteId);
 		
 		Optional<User> OwnerUser = userRepository.findById(userId);
 		
-		boolean ownerValidation = OwnerUser.get().getEmail().equals(userMailId);
+		// validation to add userhimself
+		//boolean ownerValidation = OwnerUser.get().getEmail().equals(userMailId);
 		
 		// validating user already added  
 		List<User> checkUserPresence = collabNoteDetails.get().getCollabedUsers().stream().filter(user->user.getEmail().equals(userMailId)).collect(Collectors.toList());
 
 		
 		
-		if(checkUserPresence.isEmpty()&&!ownerValidation&&collabNoteDetails.get().getUser().getUserId()==userId)
+//		if(checkUserPresence.isEmpty()&&!ownerValidation&&collabNoteDetails.get().getUser().getUserId()==userId)
+		if(checkUserPresence.isEmpty())
 		{
-			collabNoteDetails.get().getCollabedUsers().add(collabUserDetails.get());
-			collabUserDetails.get().getCollabedNotes().add(collabNoteDetails.get());
+			collabNoteDetails.get().getCollabedUsers().add(collabUserDetails);
+			collabUserDetails.getCollabedNotes().add(collabNoteDetails.get());
 			noteRepository.save(collabNoteDetails.get());
-			userRepository.save(collabUserDetails.get());
+			userRepository.save(collabUserDetails);
 
 			Response response = StatusHelper.statusInfo(environment.getProperty("status.addCollab.successMsg"),
 					Integer.parseInt(environment.getProperty("status.success.code")));
@@ -495,7 +501,7 @@ public class NoteServiceImp implements INoteService
 		log.info("collab Service userMailId->"+userMailId);
 		log.info("collab Service token->"+token);
 
-		long userId = userToken.tokenVerify(token);
+//		long userId = userToken.tokenVerify(token);
 
 		Optional<User> collabUserDetails = userRepository.findByEmail(userMailId);
 
@@ -503,7 +509,7 @@ public class NoteServiceImp implements INoteService
 
 		List<User> checkUserPresence = collabNoteDetails.get().getCollabedUsers().stream().filter(user->user.getEmail().equals(userMailId)).collect(Collectors.toList());
 
-		if(!checkUserPresence.isEmpty()&&collabNoteDetails.get().getUser().getUserId()==userId)
+		if(!checkUserPresence.isEmpty())
 		{
 			collabNoteDetails.get().getCollabedUsers().remove(collabUserDetails.get());
 			collabUserDetails.get().getCollabedNotes().remove(collabNoteDetails.get());
@@ -531,16 +537,16 @@ public class NoteServiceImp implements INoteService
 		Optional<Note> note = noteRepository.findById(noteId);
 //		Optional<User> ownerUser = userRepository.findById(userId);
 
-		if(note.get().getUser().getUserId()==userId)
-		{
+//		if(note.get().getUser().getUserId()==userId)
+//		{
 //			Set<User> collabedUsers = note.get().getCollabedUsers();
 //			collabedUsers.add(ownerUser.get());
 			Set<CollabUserInfo> collabUserInfos=note.get().getCollabedUsers().stream().map(user->modelMapper.map(user, CollabUserInfo.class)).collect(Collectors.toSet());
 //			CollabUserInfo collabUserInfo = modelMapper.map(collabedUsers, CollabUserInfo.class);
 //			
 			return collabUserInfos;
-		}
-		return null;
+//		}
+//		return null;
 	}
 
 
