@@ -206,8 +206,10 @@ public class NoteServiceImp implements INoteService
 			log.info("user validation done");
 			//			note.get().getLabels().stream().filter(label->label.getNotes().remove(note.get()));
 			note.get().getLabels().forEach(label->label.getNotes().remove(note.get()));
-			noteRepository.delete(note.get());
+			note.get().getCollabedUsers().forEach(user->user.getCollabedNotes().remove(note.get()));
 
+			noteRepository.delete(note.get());
+			
 			Response response = StatusHelper.statusInfo(environment.getProperty("status.deleteForever.successMsg"),
 					Integer.parseInt(environment.getProperty("status.success.code")));
 

@@ -293,7 +293,7 @@ public class UserServicesImplementation implements IUserServices
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
 		UserInfo userInfo = modelMapper.map(user, UserInfo.class);
-		
+		log.info("UserInfo"+userInfo.toString());
 		return userInfo;
 	}
 }
