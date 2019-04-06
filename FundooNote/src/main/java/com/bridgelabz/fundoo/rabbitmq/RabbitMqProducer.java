@@ -13,7 +13,7 @@ public class RabbitMqProducer {
 	@Autowired
 	AmqpTemplate rabbitMqTemplate;
 	
-	public void sendMessageToQueue(String message)
+	public void sendMessageToQueue(RabbitMqMessageBody message)
 	{
 		System.out.println(message);
 		rabbitMqTemplate.convertAndSend(RabbitMqConfig.EXCHANGE,RabbitMqConfig.ROUTING_KEY,message);

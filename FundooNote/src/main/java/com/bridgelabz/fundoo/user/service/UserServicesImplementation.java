@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.exception.UserException;
+import com.bridgelabz.fundoo.rabbitmq.RabbitMqMessageBody;
 import com.bridgelabz.fundoo.rabbitmq.RabbitMqProducer;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
@@ -64,6 +65,9 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	RabbitMqProducer producer;
 	
+	@Autowired
+	RabbitMqMessageBody rabbitMqMessageBody;
+
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
 //	private final Path fileLocation = Paths.get("G:\\FundooFile");
@@ -97,9 +101,16 @@ public class UserServicesImplementation implements IUserServices
 		String url=requesturl.substring(0, requesturl.lastIndexOf("/"));
 		System.out.println("url : "+url);
 		System.out.println(user.getUserId());
-		producer.sendMessageToQueue("Helllo Guys..!");
+		
+		rabbitMqMessageBody.setTo(user.getEmail());
+		rabbitMqMessageBody.setSubject("User Activation");
+		rabbitMqMessageBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
+	
+		producer.sendMessageToQueue(rabbitMqMessageBody);
+
 //		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
-		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody(url+"/useractivation/",user.getUserId()));
+		
+//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody(url+"/useractivation/",user.getUserId()));
 
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
