@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RabbitMqConsumer {
 
 	@Autowired
-	MailHelper emMailHelper;
-
-	@Autowired
 	MailHelper mailHelper;
 	
 	public void onMessage(byte[] message)

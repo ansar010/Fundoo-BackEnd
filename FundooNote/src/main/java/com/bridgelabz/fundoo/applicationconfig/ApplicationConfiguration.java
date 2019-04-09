@@ -2,6 +2,7 @@ package com.bridgelabz.fundoo.applicationconfig;
 
 import org.apache.catalina.connector.Response;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration.RestHighLevelClientConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +33,12 @@ public class ApplicationConfiguration
 	{
 		return new Response();
 	}
+	
+//	@Bean
+//	public RestHighLevelClientConfiguration client()
+//	{
+//		return new RestHighLevelClientConfiguration();
+//	}
 	
 ////	
 //	@Bean
