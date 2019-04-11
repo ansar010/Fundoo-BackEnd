@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.rabbitmq;
+package com.bridgelabz.fundoo.emailqueue;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Component
-public class RabbitMqMessageBody {
+public class EmailBody {
 	
 	private String subject;
 	private String to;

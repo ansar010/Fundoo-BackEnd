@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.rabbitmq;
+package com.bridgelabz.fundoo.emailqueue;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import com.bridgelabz.fundoo.util.MailHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class RabbitMqConsumer {
+public class EmailQueueConsumer {
 
 	@Autowired
 	MailHelper mailHelper;
@@ -20,7 +20,7 @@ public class RabbitMqConsumer {
 		ObjectMapper objectMapper = new ObjectMapper();
 	
 	try {
-		RabbitMqMessageBody body = objectMapper.readValue(message, RabbitMqMessageBody.class);
+		EmailBody body = objectMapper.readValue(message, EmailBody.class);
 		
 		mailHelper.send(body.getTo(), body.getSubject(), body.getBody());
 

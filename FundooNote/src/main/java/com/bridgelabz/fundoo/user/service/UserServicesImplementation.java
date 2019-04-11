@@ -22,9 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bridgelabz.fundoo.emailqueue.EmailBody;
+import com.bridgelabz.fundoo.emailqueue.EmailQueueProducer;
 import com.bridgelabz.fundoo.exception.UserException;
-import com.bridgelabz.fundoo.rabbitmq.RabbitMqMessageBody;
-import com.bridgelabz.fundoo.rabbitmq.RabbitMqProducer;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
@@ -63,10 +63,10 @@ public class UserServicesImplementation implements IUserServices
 	ModelMapper modelMapper;
 	
 	@Autowired
-	RabbitMqProducer producer;
+	EmailQueueProducer producer;
 	
 	@Autowired
-	RabbitMqMessageBody rabbitMqMessageBody;
+	EmailBody emailBody;
 
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
@@ -102,11 +102,11 @@ public class UserServicesImplementation implements IUserServices
 		System.out.println("url : "+url);
 		System.out.println(user.getUserId());
 		
-		rabbitMqMessageBody.setTo(user.getEmail());
-		rabbitMqMessageBody.setSubject("User Activation");
-		rabbitMqMessageBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
+		emailBody.setTo(user.getEmail());
+		emailBody.setSubject("User Activation");
+		emailBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
 	
-		producer.sendMessageToQueue(rabbitMqMessageBody);
+		producer.sendMessageToQueue(emailBody);
 
 //		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
 		

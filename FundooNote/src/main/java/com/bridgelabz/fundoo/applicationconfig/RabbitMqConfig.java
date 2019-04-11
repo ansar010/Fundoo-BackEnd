@@ -11,8 +11,10 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
-import com.bridgelabz.fundoo.rabbitmq.RabbitMqConsumer;
+import com.bridgelabz.fundoo.emailqueue.EmailQueueConsumer;
+
 
 
 
@@ -23,13 +25,14 @@ public class RabbitMqConfig {
 	public static final String ROUTING_KEY = "Ansar";
 	
 	// name of Queue
-	public static final String QUEUE_NAME = "myQueue";
+	public static final String QUEUE_NAME = "emailQueue";
 
 	// name of exchange 
-	public static final String EXCHANGE = "MyExchange";
+	public static final String EXCHANGE = "mailExchange";
 
 	// Defining bean for queue
-	@Bean
+	@Bean(name="mail")
+	@Primary
 	Queue queue() {
 		return new Queue(QUEUE_NAME, true);
 	}
@@ -55,7 +58,8 @@ public class RabbitMqConfig {
 	// Defining bean to Consume message 
 	@Bean
 	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-	MessageListenerAdapter listenerAdapter) {
+											MessageListenerAdapter listenerAdapter) 
+	{
 	 SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 	 container.setConnectionFactory(connectionFactory);
 	 container.setQueueNames(QUEUE_NAME);
@@ -65,7 +69,7 @@ public class RabbitMqConfig {
 
 
 	@Bean
-	MessageListenerAdapter myQueueListener(RabbitMqConsumer  listener) {
+	MessageListenerAdapter myQueueListener(EmailQueueConsumer  listener) {
 	 return new MessageListenerAdapter(listener, "onMessage");
 	}
 }
