@@ -1,8 +1,10 @@
 package com.bridgelabz.fundoo.applicationconfig;
 
 import org.apache.catalina.connector.Response;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration.RestHighLevelClientConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +34,18 @@ public class ApplicationConfiguration
 	public Response getResponse()
 	{
 		return new Response();
+	}
+	
+	
+	// Defining bean for rest high level client
+	@Bean(destroyMethod = "close")
+	public RestHighLevelClient client() {
+		
+		RestHighLevelClient client = new RestHighLevelClient(
+				RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+		return client;
+
 	}
 	
 //	@Bean

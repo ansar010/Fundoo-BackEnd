@@ -23,6 +23,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+//import com.bridgelabz.fundoo.elasticqueue.ElasticQueueProducer;
 import com.bridgelabz.fundoo.exception.CollaboratorException;
 import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
@@ -30,6 +31,7 @@ import com.bridgelabz.fundoo.note.dto.CollabUserInfo;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.rabbitmq.MessageProducer;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
 import com.bridgelabz.fundoo.user.model.User;
@@ -60,6 +62,12 @@ public class NoteServiceImp implements INoteService
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private MessageProducer messageProducer;
+	
+//	@Autowired
+//	private ElasticQueueProducer elasticQueueProducer;
 
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
@@ -81,7 +89,10 @@ public class NoteServiceImp implements INoteService
 
 		note.setUser(user.get());
 		note.setCreateStamp(LocalDateTime.now());
-		noteRepository.save(note);
+		Note savedNote = noteRepository.save(note);
+		
+		messageProducer.sendMsgToElasticQueue("Hello Elastic Queue");
+//		elasticQueueProducer.sendMessageToElasticQueue("Elastic search worked");
 
 		//		User user2 = note.getUser();
 		//		System.out.println(user2.toString());

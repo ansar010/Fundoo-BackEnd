@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.emailqueue;
+package com.bridgelabz.fundoo.rabbitmq;
 
 import org.springframework.stereotype.Component;
 

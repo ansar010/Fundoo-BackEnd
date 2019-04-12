@@ -22,8 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bridgelabz.fundoo.emailqueue.EmailBody;
-import com.bridgelabz.fundoo.emailqueue.EmailQueueProducer;
+import com.bridgelabz.fundoo.rabbitmq.EmailBody;
+import com.bridgelabz.fundoo.rabbitmq.MessageProducer;
+//import com.bridgelabz.fundoo.emailqueue.EmailQueueProducer;
 import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
@@ -62,8 +63,11 @@ public class UserServicesImplementation implements IUserServices
 	@Autowired
 	ModelMapper modelMapper;
 	
+//	@Autowired
+//	EmailQueueProducer producer;
+	
 	@Autowired
-	EmailQueueProducer producer;
+	MessageProducer messageProducer;
 	
 	@Autowired
 	EmailBody emailBody;
@@ -106,7 +110,8 @@ public class UserServicesImplementation implements IUserServices
 		emailBody.setSubject("User Activation");
 		emailBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
 	
-		producer.sendMessageToQueue(emailBody);
+		messageProducer.sendMsgToEmailQueue("hello email queue");
+//		producer.sendMessageToQueue(emailBody);
 
 //		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
 		
