@@ -110,7 +110,7 @@ public class UserServicesImplementation implements IUserServices
 		emailBody.setSubject("User Activation");
 		emailBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
 	
-		messageProducer.sendMsgToEmailQueue("hello email queue");
+		messageProducer.sendMsgToEmailQueue(emailBody);
 //		producer.sendMessageToQueue(emailBody);
 
 //		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));

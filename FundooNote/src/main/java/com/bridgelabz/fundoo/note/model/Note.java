@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -27,8 +28,13 @@ import lombok.ToString;
 @Setter
 @Table(name="note_details")
 @ToString
-public class Note 
+public class Note implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="ID")

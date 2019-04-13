@@ -4,8 +4,14 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.bridgelabz.fundoo.rabbitmq.MessageConsumer;
 
 @Configuration
 //@PropertySource("classpath:application.properties")
@@ -73,7 +79,48 @@ public class RabbitMqConfig {
 	public Binding elasticQueueBidning() {
 		return BindingBuilder.bind(elasticQueue()).to(elasticExchange()).with(ELASTIC_ROUTING_KEY);
 	}
+	
+	@Bean
+	MessageListenerAdapter emailQueueListenerAdapter(MessageConsumer consumer) {
+		return new MessageListenerAdapter(consumer, "emailQueueListener");
+	}
+	
+//	 @Bean
+//	    SimpleMessageListenerContainer persistenceListenerContainer(ConnectionFactory connectionFactory, @Qualifier("persistenceListenerAdapter") MessageListenerAdapter listenerAdapter) {
+//	        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//	        container.setConnectionFactory(connectionFactory);
+//	        container.setQueues(trashRouteQueue(), webAppQueue());
+//	        container.setMessageListener(listenerAdapter);
+//	        return container;
+//	    }
 
+	@Bean
+	SimpleMessageListenerContainer emailQueueListener(ConnectionFactory connectionFactory,@Qualifier("emailQueueListenerAdapter") MessageListenerAdapter listenerAdapter) {
+	
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueues(emailQueue());
+		container.setMessageListener(listenerAdapter);
+
+		return container;
+	}
+	
+	 
+	@Bean
+	MessageListenerAdapter elasticQueueListenerAdapter(MessageConsumer consumer) {
+		return new MessageListenerAdapter(consumer, "elasticQueueListener");
+	}
+	
+	@Bean
+	SimpleMessageListenerContainer elasticQueueListener(ConnectionFactory connectionFactory,@Qualifier("elasticQueueListenerAdapter")MessageListenerAdapter listenerAdapter) {
+	
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueues(elasticQueue());
+		container.setMessageListener(listenerAdapter);
+
+		return container;
+	}
 	
 }
 //

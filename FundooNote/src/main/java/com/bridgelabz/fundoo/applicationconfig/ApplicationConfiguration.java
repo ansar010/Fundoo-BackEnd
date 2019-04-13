@@ -38,7 +38,8 @@ public class ApplicationConfiguration
 	
 	
 	// Defining bean for rest high level client
-	@Bean(destroyMethod = "close")
+//	@Bean(destroyMethod = "close")
+	@Bean
 	public RestHighLevelClient client() {
 		
 		RestHighLevelClient client = new RestHighLevelClient(

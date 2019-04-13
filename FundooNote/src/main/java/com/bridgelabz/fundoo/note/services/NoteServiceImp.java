@@ -91,7 +91,7 @@ public class NoteServiceImp implements INoteService
 		note.setCreateStamp(LocalDateTime.now());
 		Note savedNote = noteRepository.save(note);
 		
-		messageProducer.sendMsgToElasticQueue("Hello Elastic Queue");
+		messageProducer.sendMsgToElasticQueue(savedNote);
 //		elasticQueueProducer.sendMessageToElasticQueue("Elastic search worked");
 
 		//		User user2 = note.getUser();

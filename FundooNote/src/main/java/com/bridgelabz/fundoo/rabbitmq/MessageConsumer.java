@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.applicationconfig.RabbitMqConfig;
+import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.util.MailHelper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,23 @@ public class MessageConsumer {
 	 * @param 
 	 */
 	@RabbitListener(queues = RabbitMqConfig.EMAIL_QUEUE)
-	public void emailQueueListener(String data)
+	public void emailQueueListener(EmailBody data)
 	{
 		log.info("Received from email queue.", data);
+		mailHelper.send(data.getTo(), data.getSubject(), data.getBody());
+	    log.info("Mail send.");
+
 	}
 
-	public void elasticQueueListener(){
-
+	/**
+	 * Message listener for elastic queue
+	 * @param 
+	 */
+	@RabbitListener(queues = RabbitMqConfig.ELASTIC_QUEUE)
+	public void elasticQueueListener(Note data){
+		log.info("Received from elastic queue.", data);
+		System.out.println("elas"+data.toString());
+		log.info("Note send.");
 	}
 
 
