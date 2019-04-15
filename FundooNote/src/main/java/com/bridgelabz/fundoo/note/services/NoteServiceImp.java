@@ -28,6 +28,7 @@ import com.bridgelabz.fundoo.exception.CollaboratorException;
 import com.bridgelabz.fundoo.note.dao.ILabelRepository;
 import com.bridgelabz.fundoo.note.dao.INoteRepository;
 import com.bridgelabz.fundoo.note.dto.CollabUserInfo;
+import com.bridgelabz.fundoo.note.dto.ElasticDto;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
@@ -66,6 +67,12 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private MessageProducer messageProducer;
 	
+	@Autowired
+	private ElasticDto elasticDto;
+	
+	@Autowired
+	private ElasticSearchService elasticService;
+	
 //	@Autowired
 //	private ElasticQueueProducer elasticQueueProducer;
 
@@ -90,8 +97,12 @@ public class NoteServiceImp implements INoteService
 		note.setUser(user.get());
 		note.setCreateStamp(LocalDateTime.now());
 		Note savedNote = noteRepository.save(note);
+		elasticDto.setData(savedNote);
+		elasticDto.setType("save");
 		
-		messageProducer.sendMsgToElasticQueue(savedNote);
+//		messageProducer.sendMsgToElasticQueue(elasticDto);
+//		messageProducer.sendMsgToElasticQueue(savedNote);
+		elasticService.save(savedNote);
 //		elasticQueueProducer.sendMessageToElasticQueue("Elastic search worked");
 
 		//		User user2 = note.getUser();
