@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.bridgelabz.fundoo.applicationconfig.RabbitMqConfig;
 import com.bridgelabz.fundoo.note.dto.ElasticDto;
-import com.bridgelabz.fundoo.note.model.Note;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +24,7 @@ public class MessageProducer {
 
 	}
 	
-	public void sendMsgToElasticQueue(Note elasticDto) {
+	public void sendMsgToElasticQueue(ElasticDto elasticDto) {
 		log.info("sending message to elastic Queue");
 		log.info(elasticDto.toString());
 		amqpTemplate.convertAndSend(RabbitMqConfig.ELASTIC_EXCHANGE, RabbitMqConfig.ELASTIC_ROUTING_KEY, elasticDto);

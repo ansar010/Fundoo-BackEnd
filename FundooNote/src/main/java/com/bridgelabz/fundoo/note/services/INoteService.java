@@ -47,6 +47,8 @@ public interface INoteService {
 
 	Set<CollabUserInfo> getCollabedUser(long noteId, String token);
 
+	List<Note> searchNotes(String searchText, String isArchive, String isTrash, String token);
+
 
 //	saveNoteImage(String token, MultipartFile file, String noteId);
 	

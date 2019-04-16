@@ -280,6 +280,16 @@ public class NoteController {
 	}
 	
 	
+	@GetMapping("/searchnotes/{searchText}")
+	public ResponseEntity<List<Note>> searchNotes(@PathVariable String searchText,@RequestParam String isArchive,@RequestParam String isTrash,@RequestHeader String token)
+	{
+		log.info("token-->"+token);
+		log.info("search note List called ");
+		List<Note> searchedNotes = noteService.searchNotes(searchText,isArchive,isTrash,token);
+		
+		return new ResponseEntity<>(searchedNotes,HttpStatus.OK);
+	}
+	
 	private void bindingResult(BindingResult bindingResult)
 	{
 		if(bindingResult.hasErrors())

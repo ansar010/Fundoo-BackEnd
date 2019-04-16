@@ -70,12 +70,6 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private ElasticDto elasticDto;
 	
-	@Autowired
-	private ElasticSearchService elasticService;
-	
-//	@Autowired
-//	private ElasticQueueProducer elasticQueueProducer;
-
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
@@ -100,9 +94,9 @@ public class NoteServiceImp implements INoteService
 		elasticDto.setData(savedNote);
 		elasticDto.setType("save");
 		
-//		messageProducer.sendMsgToElasticQueue(elasticDto);
+		messageProducer.sendMsgToElasticQueue(elasticDto);
 //		messageProducer.sendMsgToElasticQueue(savedNote);
-		elasticService.save(savedNote);
+//		elasticService.save(savedNote);
 //		elasticQueueProducer.sendMessageToElasticQueue("Elastic search worked");
 
 		//		User user2 = note.getUser();
@@ -132,7 +126,10 @@ public class NoteServiceImp implements INoteService
 		if(dbUserId==userId&&dbNote.isPresent())
 		{
 
-			noteRepository.save(note);
+			Note updatedNote = noteRepository.save(note);
+			elasticDto.setData(updatedNote);
+			elasticDto.setType("update");
+			messageProducer.sendMsgToElasticQueue(elasticDto);
 			Response response = StatusHelper.statusInfo(environment.getProperty("status.noteUpdate.successMsg"),
 					Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -231,7 +228,9 @@ public class NoteServiceImp implements INoteService
 			note.get().getCollabedUsers().forEach(user->user.getCollabedNotes().remove(note.get()));
 
 			noteRepository.delete(note.get());
-			
+			elasticDto.getData().setId(noteId);
+			elasticDto.setType("delete");
+			messageProducer.sendMsgToElasticQueue(elasticDto);
 			Response response = StatusHelper.statusInfo(environment.getProperty("status.deleteForever.successMsg"),
 					Integer.parseInt(environment.getProperty("status.success.code")));
 
@@ -548,6 +547,13 @@ public class NoteServiceImp implements INoteService
 		}else{
 			throw new CollaboratorException(environment.getProperty("status.removeCollab.errorMsg"), Integer.parseInt(environment.getProperty("status.error.code")));
 		}	
+	}
+
+	@Override
+	public List<Note> searchNotes(String searchText, String isArchive, String isTrash, String token) 
+	{
+		
+		return null;
 	}
 
 	@Override
