@@ -63,7 +63,7 @@ public class MessageConsumer {
 			log.error("Invalid option");
 			break;
 		}
-		log.info("Option success.");
+		log.info("ElasticService Crud Operation success.");
 	}
 
 

@@ -8,7 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -69,6 +71,9 @@ public class NoteServiceImp implements INoteService
 	
 	@Autowired
 	private ElasticDto elasticDto;
+	
+	@Autowired
+	private ElasticSearchService elasticService;
 	
 	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
@@ -552,8 +557,17 @@ public class NoteServiceImp implements INoteService
 	@Override
 	public List<Note> searchNotes(String searchText, String isArchive, String isTrash, String token) 
 	{
+		Map<String,Float> fields = new HashMap<>();
+		fields.put("title", 3.0f);
+		fields.put("description", 2.0f);
+
+		Map<String, Object> restriction = new HashMap<>();
+		restriction.put("is_archive", Boolean.valueOf(isArchive));
+		restriction.put("is_trash", Boolean.valueOf(isArchive));
+
+		List<Note> searchedNotes = elasticService.searchedNotes("fundoo_note", "note_info", fields, searchText, restriction);
 		
-		return null;
+		return searchedNotes;
 	}
 
 	@Override

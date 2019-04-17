@@ -1,17 +1,28 @@
 package com.bridgelabz.fundoo.note.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.lucene.search.TermQuery;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.user.dao.IUserRepository;
+import com.bridgelabz.fundoo.user.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -22,7 +33,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 	@Autowired
 	RestHighLevelClient client;
-
+	
+	@Autowired
+	IUserRepository userRespository;
 	@Override
 	public void save(Note note) 
 	{	
@@ -52,6 +65,58 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		}
 	}
 
+	@Override
+	public List<Note> searchedNotes(String index, String type, Map<String, Float> fields, String searchText,
+			Map<String, Object> restriction) {
+		
+		SearchRequest searchRequest = new SearchRequest(index).types(type);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = boolQuery(fields, searchText, restriction);
+		searchSourceBuilder.query(boolQuery);
+		searchRequest.source(searchSourceBuilder);
+		
+		SearchResponse searchResponse = null;
+		System.out.println(searchRequest.toString());
+		try {
+			searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ArrayList<Note> listOfSearchedNotes = new ArrayList<>();
+		
+		searchResponse.getHits().spliterator().forEachRemaining(note->{
+			try {
+				listOfSearchedNotes.add(objectMapper.readValue(note.getSourceAsString(), Note.class));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}});
+//		searchSourceBuilder.query()
+		
+		return listOfSearchedNotes;
+	}
+
+	// method to write search bool query
+	private BoolQueryBuilder boolQuery(Map<String, Float> fields,String textToSearch,Map<String,Object> restriction)
+	{
+		// concatenating wild-card to search text
+		if(!textToSearch.startsWith("*")) {
+			textToSearch = "*"+textToSearch;
+		}
+		
+		if(!textToSearch.endsWith("*")) {
+			textToSearch = textToSearch+"*";
+		}
+		
+		Optional<User> findById = userRespository.findById(1l);
+		System.out.println(findById.get().toString());
+		BoolQueryBuilder searchQuery = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(textToSearch).fields(fields))
+				.filter(QueryBuilders.termQuery("user.userId", 1));
+//		BoolQueryBuilder searchQuery = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(textToSearch).fields(fields));
+		
+		return searchQuery;
+	}
+	
 	@Override
 	public void delete(long noteId) 
 	{
