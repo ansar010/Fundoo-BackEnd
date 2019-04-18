@@ -19,17 +19,17 @@ public class RabbitMqConfig {
 
 	// Queues 
 	//	@Value("${email.queue.name}")
-	public static final String EMAIL_QUEUE = "emailQueue";
+	public static final String EMAIL_QUEUE = "fundoo.email.queue";
 
 	//	@Value("${elastic.queue.name}")
-	public static final String ELASTIC_QUEUE = "elasticQueue";
+	public static final String ELASTIC_QUEUE = "fundoo.elastic.queue";
 
 	// Exchanges 
 	//	@Value("${email.exchange.name}")
-	public static final String EMAIL_EXCHANGE ="emailExchange";
+	public static final String EMAIL_EXCHANGE ="email.exchange";
 
 	//	@Value("${elastic.exchange.name}")
-	public static final String ELASTIC_EXCHANGE = "elasticExchange";
+	public static final String ELASTIC_EXCHANGE = "elastic.exchange";
 
 	// Routing-key 	
 	//	@Value("${email.routing.key}")

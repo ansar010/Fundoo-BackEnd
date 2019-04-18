@@ -66,12 +66,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	}
 
 	@Override
-	public List<Note> searchedNotes(String index, String type, Map<String, Float> fields, String searchText,
-			Map<String, Object> restriction) {
+	public List<Note> searchedNotes(String index, String type, Map<String, Float> fields, String searchText,long userId) {
 		
 		SearchRequest searchRequest = new SearchRequest(index).types(type);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = boolQuery(fields, searchText, restriction);
+		BoolQueryBuilder boolQuery = boolQuery(fields, searchText, userId);
 		searchSourceBuilder.query(boolQuery);
 		searchRequest.source(searchSourceBuilder);
 		
@@ -97,7 +96,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 	}
 
 	// method to write search bool query
-	private BoolQueryBuilder boolQuery(Map<String, Float> fields,String textToSearch,Map<String,Object> restriction)
+	private BoolQueryBuilder boolQuery(Map<String, Float> fields,String textToSearch, long userId)
 	{
 		// concatenating wild-card to search text
 		if(!textToSearch.startsWith("*")) {
@@ -111,7 +110,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		Optional<User> findById = userRespository.findById(1l);
 		System.out.println(findById.get().toString());
 		BoolQueryBuilder searchQuery = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(textToSearch).fields(fields))
-				.filter(QueryBuilders.termQuery("user.userId", 1));
+				.filter(QueryBuilders.termQuery("user.userId", userId));
 //		BoolQueryBuilder searchQuery = QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(textToSearch).fields(fields));
 		
 		return searchQuery;

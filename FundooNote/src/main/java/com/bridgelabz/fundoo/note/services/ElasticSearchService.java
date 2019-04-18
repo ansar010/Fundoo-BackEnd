@@ -13,7 +13,6 @@ public interface ElasticSearchService {
 	
 	public void delete(long noteId);
 	
-	public List<Note> searchedNotes(String index,String type,Map<String,Float> fields,String searchText,Map<String , Object> restriction );
-//	List<Notes> multipleFieldQuery(Map<String,Float> fields,String text,Map<String,Object> restrictions,String type,String index);
+	public List<Note> searchedNotes(String index,String type,Map<String,Float> fields,String searchText,long userId);
 
 }

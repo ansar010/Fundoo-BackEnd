@@ -75,8 +75,8 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private ElasticSearchService elasticService;
 	
-	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
-	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
+//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+		private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 
@@ -555,17 +555,15 @@ public class NoteServiceImp implements INoteService
 	}
 
 	@Override
-	public List<Note> searchNotes(String searchText, String isArchive, String isTrash, String token) 
+	public List<Note> searchNotes(String searchText,String token) 
 	{
+		long userId = userToken.tokenVerify(token);
+		
 		Map<String,Float> fields = new HashMap<>();
 		fields.put("title", 3.0f);
 		fields.put("description", 2.0f);
 
-		Map<String, Object> restriction = new HashMap<>();
-		restriction.put("is_archive", Boolean.valueOf(isArchive));
-		restriction.put("is_trash", Boolean.valueOf(isArchive));
-
-		List<Note> searchedNotes = elasticService.searchedNotes("fundoo_note", "note_info", fields, searchText, restriction);
+		List<Note> searchedNotes = elasticService.searchedNotes("fundoo_note", "note_info", fields, searchText ,userId);
 		
 		return searchedNotes;
 	}
