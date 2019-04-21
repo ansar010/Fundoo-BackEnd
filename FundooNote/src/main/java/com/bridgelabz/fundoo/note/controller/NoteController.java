@@ -279,7 +279,7 @@ public class NoteController {
 		return new ResponseEntity<>(setOfUser,HttpStatus.OK);
 	}
 	
-	
+	//...
 	@GetMapping("/searchnotes/{searchText}")
 	public ResponseEntity<List<Note>> searchNotes(@PathVariable String searchText,@RequestHeader String token)
 	{
