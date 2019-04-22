@@ -1,3 +1,10 @@
+/****************************************************************************************
+ * purpose :  Implementation of user service .
+ *
+ *@author Ansar
+ *@version 1.8
+ *@since 22/4/2019
+ ****************************************************************************************/
 package com.bridgelabz.fundoo.user.service;
 
 import java.io.IOException;
@@ -22,10 +29,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.rabbitmq.EmailBody;
 import com.bridgelabz.fundoo.rabbitmq.MessageProducer;
-//import com.bridgelabz.fundoo.emailqueue.EmailQueueProducer;
-import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dao.IUserRepository;
@@ -47,7 +53,7 @@ public class UserServicesImplementation implements IUserServices
 
 	@Autowired
 	private Environment environment;
-	
+
 	@Autowired
 	private IUserRepository userRepository;
 
@@ -62,19 +68,16 @@ public class UserServicesImplementation implements IUserServices
 
 	@Autowired
 	ModelMapper modelMapper;
-	
-//	@Autowired
-//	EmailQueueProducer producer;
-	
+
 	@Autowired
 	MessageProducer messageProducer;
-	
+
 	@Autowired
 	EmailBody emailBody;
 
-//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
 
-	private final Path fileLocation = Paths.get("G:\\FundooFile");
+	//	private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response addUser(UserDTO userDTO,HttpServletRequest request)
@@ -105,23 +108,22 @@ public class UserServicesImplementation implements IUserServices
 		String url=requesturl.substring(0, requesturl.lastIndexOf("/"));
 		System.out.println("url : "+url);
 		System.out.println(user.getUserId());
-		
+
 		emailBody.setTo(user.getEmail());
 		emailBody.setSubject("User Activation");
 		emailBody.setBody(mailHelper.getBody(url+"/useractivation/",user.getUserId()));
-	
-		messageProducer.sendMsgToEmailQueue(emailBody);
-//		producer.sendMessageToQueue(emailBody);
 
-//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
-		
-//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody(url+"/useractivation/",user.getUserId()));
+		messageProducer.sendMsgToEmailQueue(emailBody);
+
+		//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody("192.168.0.56:8080/user/useractivation/",user.getUserId()));
+
+		//		mailHelper.send(user.getEmail(), "User Activation", mailHelper.getBody(url+"/useractivation/",user.getUserId()));
 
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.register.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
 	}
 
-	
+
 	@Override
 	public ResponseToken userLogin(LoginDTO loginDTO)
 	{
@@ -191,7 +193,7 @@ public class UserServicesImplementation implements IUserServices
 		user.setAccount_update(LocalDateTime.now());
 
 		System.out.println("user "+user);
-		
+
 		return userRepository.save(user);
 
 	}
@@ -237,74 +239,74 @@ public class UserServicesImplementation implements IUserServices
 		Response response = StatusHelper.statusInfo(environment.getProperty("status.resetPassword.success"),Integer.parseInt(environment.getProperty("status.success.code")));
 		return response;
 	}
-	
+
 	@Override
 	public Response saveProfileImage(String token, MultipartFile file) {
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
 		UUID uuid = UUID.randomUUID();
 		String uniqueId = uuid.toString();
-		
+
 		try {
 			Files.copy(file.getInputStream(), fileLocation.resolve(uniqueId), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-			user.setProfileImage(uniqueId);
-			userRepository.save(user);
-			Response response = StatusHelper.statusInfo(environment.getProperty("status.imageUpload.successMsg"),
-					Integer.parseInt(environment.getProperty("status.success.code")));
 
-			return response;
+		user.setProfileImage(uniqueId);
+		userRepository.save(user);
+		Response response = StatusHelper.statusInfo(environment.getProperty("status.imageUpload.successMsg"),
+				Integer.parseInt(environment.getProperty("status.success.code")));
+
+		return response;
 	}
 
 
 	@Override
 	public Resource getImage(String token) {
-		
-//		Note note = noteRepository.findById(noteId).get();
+
+		//		Note note = noteRepository.findById(noteId).get();
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
-		
-		//validating user 
-//		if(note.getUser().getUserId()==userId)
-//		{
-			// get image name from database
-			Path imagePath = fileLocation.resolve(user.getProfileImage());
 
-			try {
-				//creating url resource based on uri object
-				Resource resource = new UrlResource(imagePath.toUri());
-				if(resource.exists() || resource.isReadable())
-				{
-					return resource;
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+		//validating user 
+		//		if(note.getUser().getUserId()==userId)
+		//		{
+		// get image name from database
+		Path imagePath = fileLocation.resolve(user.getProfileImage());
+
+		try {
+			//creating url resource based on uri object
+			Resource resource = new UrlResource(imagePath.toUri());
+			if(resource.exists() || resource.isReadable())
+			{
+				return resource;
 			}
-//		}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		//		}
 		return null;
 	}
-	
+
 	@Override
 	public Resource getCollabUserImage(long userId) {
-		
-		User user = userRepository.findById(userId).get();
-		
-			Path imagePath = fileLocation.resolve(user.getProfileImage());
 
-			try {
-				//creating url resource based on uri object
-				Resource resource = new UrlResource(imagePath.toUri());
-				if(resource.exists() || resource.isReadable())
-				{
-					return resource;
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+		User user = userRepository.findById(userId).get();
+
+		Path imagePath = fileLocation.resolve(user.getProfileImage());
+
+		try {
+			//creating url resource based on uri object
+			Resource resource = new UrlResource(imagePath.toUri());
+			if(resource.exists() || resource.isReadable())
+			{
+				return resource;
 			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		return null;	
 	}
 

@@ -1,3 +1,10 @@
+/****************************************************************************************
+ * purpose : .
+ *
+ *@author Ansar
+ *@version 1.2
+ *@since 18/12/2018
+ ****************************************************************************************/
 package com.bridgelabz.fundoo.note.services;
 
 import java.io.IOException;
@@ -75,8 +82,8 @@ public class NoteServiceImp implements INoteService
 	@Autowired
 	private ElasticSearchService elasticService;
 	
-//	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
-		private final Path fileLocation = Paths.get("G:\\FundooFile");
+	private final Path fileLocation = Paths.get("/home/admin1/FundooFile");
+//		private final Path fileLocation = Paths.get("G:\\FundooFile");
 
 	@Override
 	public Response createNote(NoteDTO noteDTO, String token) 

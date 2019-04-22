@@ -1,3 +1,10 @@
+/****************************************************************************************
+ * purpose : UserController for get request and send response.
+ *
+ *@author Ansar
+ *@version 1.8
+ *@since 22/4/2019
+ ****************************************************************************************/
 package com.bridgelabz.fundoo.user.controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,9 +43,7 @@ import com.bridgelabz.fundoo.user.service.IUserServices;
 @RestController
 @CrossOrigin(origins = "*" ,allowedHeaders = "*")
 // @CrossOrigin(origins= {"http://localhost:4202"},allowedHeaders = "*",exposedHeaders= {"jwtToken"})
-
 @RequestMapping("/user")
-
 //annotation for set environment file 
 @PropertySource("classpath:message.properties")
 public class UserController 
@@ -50,7 +55,14 @@ public class UserController
 
 	@Autowired
 	private Environment environment;
-
+	
+	/**
+	 * 
+	 * @param userDTO takes user details
+	 * @param bindingResult use to bind and validate data to respective model
+	 * @param request use to take server address
+	 * @return success response if user added to database
+	 */
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult, HttpServletRequest request)
 	{
@@ -64,6 +76,12 @@ public class UserController
 		return new ResponseEntity<Response>(statusResponse, HttpStatus.OK);
 	}
 
+	
+	/**
+	 * @param loginDTO takes login data 
+	 * @param bindingResult bind the data to model
+	 * @return response 
+	 */
 	@PostMapping("/login")
 	public ResponseEntity<ResponseToken> login(@RequestBody LoginDTO loginDTO,BindingResult bindingResult) 	{
 		logger.info("Login Input "+loginDTO);
@@ -77,7 +95,6 @@ public class UserController
 		return new ResponseEntity<ResponseToken>(userLoginResponse, HttpStatus.OK);
 	}
 
-//
 	@RequestMapping("/useractivation/{token}")
 	public ResponseEntity<String> userVerification(@PathVariable String token)
 	{
@@ -145,49 +162,7 @@ public class UserController
 //		return resource;
 		return new ResponseEntity<>(userInfo,HttpStatus.OK);
 	}
-//	@GetMapping("/getUserDetails")
-//	public ResponseEntity<UserInfo> getUserInfo(@RequestHeader String token)throws UserException
-//	{
-//		return new ResponseEntity<UserInfo>(userServices.getUserInfo(token),HttpStatus.OK);
-//		}
-	
-	
-//	@PostMapping(value = "/imageupload")
-//	public ResponseEntity<Response> profileImageSave(@RequestHeader("token") String token,
-//			@RequestParam("file") MultipartFile file) throws UserException // @RequestHeader("token") String token,
-//	{
-//		UUID uuid = UUID.randomUUID();
-//		String uuidString = uuid.toString();
-//		try {
-//			Files.copy(file.getInputStream(), this.rootLocation.resolve(uuidString),
-//					StandardCopyOption.REPLACE_EXISTING);
-//			userServices.setProfileImage(token, uuid.toString());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		Response response = new Response();
-//		response.setStatusCode(166);
-//		response.setStatusMessage("Image Uploaded");
-//		return new ResponseEntity<Response>(response, HttpStatus.OK);
-//	}
-//
-//	@GetMapping("/imageget/{token}")
-//	public Resource getProfilePic(@PathVariable String token) throws UserException {
-//		long id = UserToken.tokenVerify(token);
-//		System.out.println(id);
-//		String fileName = userServices.getProfileImage(id);
-//		Path file = rootLocation.resolve(fileName);
-//		try {
-//			Resource resource = new UrlResource(file.toUri());
-//			if (resource.exists() || resource.isReadable()) {
-//				return resource;
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
+
 	private void bindingResult(BindingResult bindingResult)
 	{
 		if(bindingResult.hasErrors())

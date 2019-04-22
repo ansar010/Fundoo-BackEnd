@@ -1,3 +1,10 @@
+/****************************************************************************************
+ * purpose : Model for User data.
+ *
+ *@author Ansar
+ *@version 1.8
+ *@since 22/4/2019
+ ****************************************************************************************/
 package com.bridgelabz.fundoo.user.model;
 
 import java.io.Serializable;
@@ -67,13 +74,4 @@ public class User implements Serializable
 	@ManyToMany(mappedBy="collabedUsers")
 	@JsonIgnore
 	private Set<Note> collabedNotes;
-
-//	//O to many using Unidirectional
-////	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
-////	@OneToMany(targetEntity=Note.class,cascade=CascadeType.ALL,fetch=FetchType.LAZY,mappedBy="user_details")
-//
-//    @OneToMany(mappedBy = "userId",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
-//	private Set<Note> notes;//To build O to Many relation
-////	private Note notes;//To build O to Many relation
-
 }
