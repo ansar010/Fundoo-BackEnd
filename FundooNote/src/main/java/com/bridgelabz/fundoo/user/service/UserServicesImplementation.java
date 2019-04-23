@@ -270,7 +270,7 @@ public class UserServicesImplementation implements IUserServices
 		long userId = userToken.tokenVerify(token);
 		User user = userRepository.findById(userId).get();
 
-		//validating user 
+		//validating user ..
 		//		if(note.getUser().getUserId()==userId)
 		//		{
 		// get image name from database
