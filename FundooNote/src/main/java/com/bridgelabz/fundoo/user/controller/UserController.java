@@ -66,7 +66,8 @@ public class UserController
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO,BindingResult bindingResult, HttpServletRequest request)
 	{
-		logger.info("userDTO data"+userDTO.toString());
+		logger.info("userDTO data",userDTO);
+
 		logger.trace("User Registration");
 
 		bindingResult(bindingResult);
