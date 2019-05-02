@@ -63,27 +63,7 @@ public class NoteController {
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
 	}
 
-	//	/**
-	//	 * An API to update note 
-	//	 * @param noteDTO
-	//	 * @param bindingResult
-	//	 * @param token
-	//	 * @return
-	//	 */
-	//	@PutMapping
-	//	public ResponseEntity<Response> updateNote(@RequestHeader long noteId,@RequestBody NoteDTO noteDTO,BindingResult bindingResult,@RequestHeader("token") String token)
-	//	{
-	//		log.info("Note-->"+noteDTO);
-	//		log.info("token-->"+token);
-	//		
-	//		bindingResult(bindingResult);
-	////		customValidation(note);
-	//		
-	//		Response response = noteService.updateNote(noteId,noteDTO, token);
-	//		
-	//		return new ResponseEntity<>(response,HttpStatus.CREATED);
-	//	}
-
+	
 	@PutMapping
 	public ResponseEntity<Response> updateNote(@RequestBody Note note,BindingResult bindingResult,@RequestHeader("token") String token)
 	{
@@ -179,48 +159,6 @@ public class NoteController {
 
 		return new ResponseEntity<>(listOfNotes,HttpStatus.CREATED);
 	}
-
-
-	//	@GetMapping("/labelnote")
-	//	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestHeader String token,@RequestParam String label)throws NoteException
-	//	{
-	//		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
-	//		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
-	//		
-	//}
-	//	@PutMapping
-	//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
-	//												@RequestHeader("token") String token,@RequestParam long noteId)
-	//	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO,BindingResult bindingResult,
-	//			@RequestHeader("token") String token)
-	//
-	//	{
-	//		log.info("Note-->"+noteDTO);
-	//		log.info("token-->"+token);
-	//		
-	//		bindingResult(bindingResult);
-	//		customValidation(noteDTO);
-	//		
-	////		Response response = noteService.updateNote(noteDTO, token,noteId);
-	//		Response response = noteService.updateNote(noteDTO, token);
-	//
-	//		
-	//		return new ResponseEntity<>(response,HttpStatus.CREATED);
-	//	}
-
-	//	@PutMapping
-	//	public ResponseEntity<ResponseToken> updateNote(@RequestBody NoteDTO noteDTO,@RequestHeader("token") String token)
-	//	{
-	//		log.info("Note-->"+noteDTO);
-	//		log.info("token-->"+token);
-	//		
-	//		boolean d=noteService.updateNote(noteDTO,token);
-	//		response.setStatusCode(200);
-	//		response.setStatusMessage(environment.getProperty("8"));
-	//		
-	//		return new ResponseEntity<ResponseToken>(response,HttpStatus.CREATED);
-	//	}
-
 
 	@PostMapping("/imageupload/{noteId}")
 	public ResponseEntity<Response> saveImage(@RequestHeader("token") String token, @RequestParam("file") MultipartFile file,@PathVariable String noteId)
